@@ -40,7 +40,7 @@ class BipartiteNodeData(torch_geometric.data.Data):
 
 class GraphDataset(torch_geometric.data.Dataset):
     """
-    This class encodes a collection of graphs, as well as a method to load 
+    This class encodes a collection of graphs, as well as a method to load
     such graphs from the disk.
     It can be used in turn by the data loaders provided by pytorch geometric.
     """
@@ -66,18 +66,18 @@ class GraphDataset(torch_geometric.data.Dataset):
         edge_indices = torch.from_numpy(edge_indices.astype(np.int64))
         edge_features = torch.from_numpy(edge_features.astype(np.float32)).view(-1, 1)
         variable_features = torch.from_numpy(variable_features.astype(np.float32))
-        
-        # We note on which variables we were allowed to branch, the scores as well as the choice 
+
+        # We note on which variables we were allowed to branch, the scores as well as the choice
         # taken by strong branching (relative to the candidates)
         candidates = torch.LongTensor(np.array(sample_action_set, dtype=np.int32))
         candidate_scores = torch.FloatTensor([sample_scores[j] for j in candidates])
         candidate_choice = torch.where(candidates == sample_action)[0][0]
 
         graph = BipartiteNodeData(
-            constraint_features, edge_indices, edge_features, 
+            constraint_features, edge_indices, edge_features,
             variable_features, candidates, candidate_choice, candidate_scores)
 
         # We must tell pytorch geometric how many nodes there are, for indexing purposes
         graph.num_nodes = constraint_features.shape[0]+variable_features.shape[0]
-        
+
         return graph

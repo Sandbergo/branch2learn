@@ -45,7 +45,7 @@ if __name__ == '__main__':
     POLICY_DICT = {'mlp1': MLP1Policy(), 'mlp2': MLP2Policy(), 'mlp3': MLP3Policy(),
                    'gnn1': GNN1Policy(), 'gnn2': GNN2Policy(), }
     PROBLEM = args.problem
-    
+
     if args.gpu == -1:
         os.environ['CUDA_VISIBLE_DEVICES'] = ''
         DEVICE = torch.device('cpu')
@@ -58,9 +58,9 @@ if __name__ == '__main__':
     rng = np.random.RandomState(args.seed)
     torch.manual_seed(rng.randint(np.iinfo(int).max))
 
-    Path('examples/log/').mkdir(exist_ok=True)
-    log = Logger(filename='examples/log/02_train')
-    
+    Path('branch2learn/log/').mkdir(exist_ok=True)
+    log = Logger(filename='branch2learn/log/02_train')
+
     log(f'Model:   {args.model}')
     log(f'Problem: {PROBLEM}')
     log(f'Device:  {DEVICE}')
@@ -71,7 +71,7 @@ if __name__ == '__main__':
 
     # --- TRAIN --- #
     sample_files = [str(path) for path in Path(
-        f'examples/data/samples/{PROBLEM}/train'
+        f'branch2learn/data/samples/{PROBLEM}/train'
         ).glob('sample_*.pkl')]
     train_files = sample_files[:int(0.8*len(sample_files))]
     valid_files = sample_files[int(0.8*len(sample_files)):]
@@ -81,7 +81,7 @@ if __name__ == '__main__':
     valid_data = GraphDataset(valid_files)
     valid_loader = torch_geometric.data.DataLoader(valid_data, batch_size=128, shuffle=False)
 
-    model_filename = f'examples/models/{args.model}/{args.model}_{PROBLEM}.pkl'
+    model_filename = f'branch2learn/models/{args.model}/{args.model}_{PROBLEM}.pkl'
     optimizer = torch.optim.Adam(policy.parameters(), lr=LEARNING_RATE)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
         optimizer, mode='min', factor=0.2, patience=PATIENCE, verbose=True)
@@ -95,7 +95,7 @@ if __name__ == '__main__':
 
     for epoch in range(NB_EPOCHS):
         log(f'Epoch {epoch+1}')
-        
+
         train_loss, train_acc = process(
             policy=policy, data_loader=train_loader, device=DEVICE, optimizer=optimizer)
         log(f'Train loss: {train_loss:0.3f}, accuracy {train_acc:0.3f}')

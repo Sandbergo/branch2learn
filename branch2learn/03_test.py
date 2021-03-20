@@ -92,7 +92,7 @@ if __name__ == '__main__':
     POLICY_DICT = {'mlp1': MLP1Policy(), 'mlp2': MLP2Policy(), 'mlp3': MLP3Policy(),
                    'gnn1': GNN1Policy(), 'gnn2': GNN2Policy(), }
     PROBLEM = args.problem
-    
+
     if args.gpu == -1:
         os.environ['CUDA_VISIBLE_DEVICES'] = ''
         DEVICE = torch.device('cpu')
@@ -105,9 +105,9 @@ if __name__ == '__main__':
     rng = np.random.RandomState(args.seed)
     torch.manual_seed(rng.randint(np.iinfo(int).max))
 
-    Path('examples/log/').mkdir(exist_ok=True)
-    log = Logger(filename='examples/log/02_train')
-    
+    Path('branch2learn/log/').mkdir(exist_ok=True)
+    log = Logger(filename='branch2learn/log/02_train')
+
     log(f'Model:   {args.model}')
     log(f'Problem: {PROBLEM}')
     log(f'Device:  {DEVICE}')
@@ -116,19 +116,19 @@ if __name__ == '__main__':
 
     # --- TEST --- #
     sample_files = [str(path) for path in Path(
-        f'examples/data/samples/{PROBLEM}/test'
+        f'branch2learn/data/samples/{PROBLEM}/test'
         ).glob('sample_*.pkl')]
     test_files = sample_files[:int(0.8*len(sample_files))]
 
     test_data = GraphDataset(train_files)
     test_loader = torch_geometric.data.DataLoader(train_data, batch_size=32, shuffle=False)
 
-    model_filename = f'examples/models/{args.model}/{args.model}_{PROBLEM}.pkl'
+    model_filename = f'branch2learn/models/{args.model}/{args.model}_{PROBLEM}.pkl'
     policy.restore_state(model_filename)
-   
+
     log('Beginning testing')
     test_kacc = process(policy=policy, data_loader=test_loader, device=DEVICE, optimizer=None)
-    
+
     log(f'Test kacc: {test_kacc}')
 
     log('End of testing.')

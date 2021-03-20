@@ -5,7 +5,7 @@ import torch_geometric
 
 class BipartiteGraphConvolution(torch_geometric.nn.MessagePassing):
     """
-    The bipartite graph convolution is already provided by pytorch geometric and we merely need 
+    The bipartite graph convolution is already provided by pytorch geometric and we merely need
     to provide the exact form of the messages being passed.
     """
     def __init__(self):
@@ -41,23 +41,23 @@ class BipartiteGraphConvolution(torch_geometric.nn.MessagePassing):
         This method sends the messages, computed in the message method.
         """
         output = self.propagate(
-            edge_indices, size=(left_features.shape[0], right_features.shape[0]), 
+            edge_indices, size=(left_features.shape[0], right_features.shape[0]),
             node_features=(left_features, right_features), edge_features=edge_features)
-        
+
         return self.output_module(
             torch.cat([self.post_conv_module(output), right_features], dim=-1))
 
     def message(self, node_features_i, node_features_j, edge_features):
         output = self.feature_module_final(
-            self.feature_module_left(node_features_i) 
-            + self.feature_module_edge(edge_features) 
+            self.feature_module_left(node_features_i)
+            + self.feature_module_edge(edge_features)
             + self.feature_module_right(node_features_j))
         return output
 
 
 def process(policy, data_loader, device, optimizer=None):
     """
-    This function will process a whole epoch of training or validation, 
+    This function will process a whole epoch of training or validation,
     depending on whether an optimizer is provided.
     """
     mean_loss = 0
@@ -67,14 +67,14 @@ def process(policy, data_loader, device, optimizer=None):
     with torch.set_grad_enabled(optimizer is not None):
         for batch in data_loader:
             batch = batch.to(device)
-            # Compute the logits (i.e. pre-softmax activations) 
+            # Compute the logits (i.e. pre-softmax activations)
             # according to the policy on the concatenated graphs
-            logits = policy(batch.constraint_features, 
-                            batch.edge_index, 
-                            batch.edge_attr, 
+            logits = policy(batch.constraint_features,
+                            batch.edge_index,
+                            batch.edge_attr,
                             batch.variable_features)
             # Index the results by the candidates, and split and pad them
-           
+
             logits = pad_tensor(logits[batch.candidates], batch.nb_candidates)
             # Compute the usual cross-entropy classification loss
             loss = F.cross_entropy(logits, batch.candidate_choices)
@@ -86,7 +86,7 @@ def process(policy, data_loader, device, optimizer=None):
 
             true_scores = pad_tensor(batch.candidate_scores, batch.nb_candidates)
             true_bestscore = true_scores.max(dim=-1, keepdims=True).values
-            
+
             predicted_bestindex = logits.max(dim=-1, keepdims=True).indices
             accuracy = (true_scores.gather(-1, predicted_bestindex) == true_bestscore
                        ).float().mean().item()
@@ -102,7 +102,7 @@ def process(policy, data_loader, device, optimizer=None):
 
 def pad_tensor(input_, pad_sizes, pad_value=-1e8):
     """
-    This utility function splits a tensor and pads each split to make them 
+    This utility function splits a tensor and pads each split to make them
     all the same size, then stacks them.
     """
     max_pad_size = pad_sizes.max()
