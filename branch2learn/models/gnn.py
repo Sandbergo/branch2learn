@@ -1,5 +1,5 @@
 import torch
-from utilities_model import BipartiteGraphConvolution
+from utilities.model import BipartiteGraphConvolution
 
 
 class GNN1Policy(torch.nn.Module):

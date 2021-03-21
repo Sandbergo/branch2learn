@@ -55,7 +55,7 @@ class BipartiteGraphConvolution(torch_geometric.nn.MessagePassing):
         return output
 
 
-def process(policy, data_loader, device, optimizer=None):
+def process(policy, data_loader, device: str, optimizer=None):
     """
     This function will process a whole epoch of training or validation,
     depending on whether an optimizer is provided.

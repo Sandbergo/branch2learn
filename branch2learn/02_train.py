@@ -5,9 +5,9 @@ import os
 import argparse
 from pathlib import Path
 
-from utilities_general import Logger
-from utilities_model import process
-from utilities_data import GraphDataset
+from utilities.general import Logger
+from utilities.model import process
+from utilities.data import GraphDataset
 from models.mlp import MLP1Policy, MLP2Policy, MLP3Policy
 from models.gnn import GNN1Policy, GNN2Policy
 
@@ -39,7 +39,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     LEARNING_RATE = 0.001
-    NB_EPOCHS = 2
+    NB_EPOCHS = 1
     PATIENCE = 10
     EARLY_STOPPING = 20
     POLICY_DICT = {'mlp1': MLP1Policy(), 'mlp2': MLP2Policy(), 'mlp3': MLP3Policy(),
@@ -70,11 +70,12 @@ if __name__ == '__main__':
 
 
     # --- TRAIN --- #
-    sample_files = [str(path) for path in Path(
+    train_files = [str(path) for path in Path(
         f'branch2learn/data/samples/{PROBLEM}/train'
         ).glob('sample_*.pkl')]
-    train_files = sample_files[:int(0.8*len(sample_files))]
-    valid_files = sample_files[int(0.8*len(sample_files)):]
+    valid_files = [str(path) for path in Path(
+        f'branch2learn/data/samples/{PROBLEM}/valid'
+        ).glob('sample_*.pkl')]
 
     train_data = GraphDataset(train_files)
     train_loader = torch_geometric.data.DataLoader(train_data, batch_size=32, shuffle=False)
@@ -89,6 +90,9 @@ if __name__ == '__main__':
     best_loss = np.inf
 
     log('Beginning training')
+    valid_loss, valid_acc = process(
+        policy=policy, data_loader=valid_loader, device=DEVICE, optimizer=None)
+    log(f'Valid loss: {valid_loss:0.3f}, accuracy {valid_acc:0.3f}')
     valid_loss, valid_acc = process(
         policy=policy, data_loader=valid_loader, device=DEVICE, optimizer=None)
     log(f'Valid loss: {valid_loss:0.3f}, accuracy {valid_acc:0.3f}')
@@ -107,7 +111,7 @@ if __name__ == '__main__':
         if valid_loss < best_loss:
             plateau_count = 0
             best_loss = valid_loss
-            policy.save_state(model_filename)
+            torch.save(policy.state_dict(), model_filename)
             log(f'  best model so far')
         else:
             plateau_count += 1
@@ -119,12 +123,12 @@ if __name__ == '__main__':
                 log(f'  {plateau_count} epochs without improvement, decrease lr to {LEARNING_RATE}')
 
         scheduler.step(valid_loss)
-
-    policy.restore_state(model_filename)
+    policy.load_state_dict(torch.load(model_filename))
     valid_loss, valid_acc = process(
-        policy=policy, data_loader=valid_data,  device=DEVICE, optimizer=None)
-    log(f'Best valid loss: {valid_loss:0.3f}, accuracy {valid_acc:0.3f}')
+        policy=policy, data_loader=valid_loader, device=DEVICE, optimizer=None)
+    log(f'Valid loss: {valid_loss:0.3f}, accuracy {valid_acc:0.3f}')
 
     log(f'Saving model as {model_filename}')
     torch.save(policy.state_dict(), model_filename)
+    
     log('End of training.')

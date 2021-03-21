@@ -35,3 +35,5 @@ dependencies:
   - black
   - ipython
   - pyscipopt >= 3.0.1  # optional
+  # b2l denendencies
+  

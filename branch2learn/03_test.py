@@ -1,18 +1,20 @@
 import numpy as np
 import torch
 import torch_geometric
+import torch.nn.functional as F
 import os
 import argparse
 from pathlib import Path
+from typing import List
 
-from utilities_general import Logger
-from utilities_model import process
-from utilities_data import GraphDataset
+from utilities.general import Logger
+from utilities.model import pad_tensor
+from utilities.data import GraphDataset
 from models.mlp import MLP1Policy, MLP2Policy, MLP3Policy
 from models.gnn import GNN1Policy, GNN2Policy
 
 
-def process(model, dataloader, top_k):
+def process_kacc(policy, data_loader, device: str, top_k: List[int], optimizer=None) -> List[float]:
     """
     Executes only a forward pass of model over the dataset and computes accuracy
     Parameters
@@ -32,30 +34,35 @@ def process(model, dataloader, top_k):
     mean_kacc = np.zeros(len(top_k))
 
     n_samples_processed = 0
-    for batch in dataloader:
-        cand_features, n_cands, best_cands, cand_scores, weights  = map(lambda x:x.to(device), batch)
-        batched_states = (cand_features)
-        batch_size = n_cands.shape[0]
-        weights /= batch_size # sum loss
+    with torch.set_grad_enabled(optimizer is not None):
+        for batch in data_loader:
+            batch = batch.to(device)
+            # Compute the logits (i.e. pre-softmax activations)
+            # according to the policy on the concatenated graphs
+            logits = policy(batch.constraint_features,
+                            batch.edge_index,
+                            batch.edge_attr,
+                            batch.variable_features)
+            # Index the results by the candidates, and split and pad them
 
-        with torch.no_grad():
-            logits = model(batched_states)  # eval mode
-            logits = model.pad_output(logits, n_cands)  # apply padding now
+            logits = pad_tensor(logits[batch.candidates], batch.nb_candidates)
+            # Compute the usual cross-entropy classification loss
+            loss = F.cross_entropy(logits, batch.candidate_choices)
 
-        true_scores = model.pad_output(torch.reshape(cand_scores, (1, -1)), n_cands)
-        true_bestscore = torch.max(true_scores, dim=-1, keepdims=True).values
-        true_scores = true_scores.cpu().numpy()
-        true_bestscore = true_bestscore.cpu().numpy()
+            true_scores = pad_tensor(batch.candidate_scores, batch.nb_candidates)
+            true_bestscore = torch.max(true_scores, dim=-1, keepdims=True).values
+            true_scores = true_scores.cpu().numpy()
+            true_bestscore = true_bestscore.cpu().numpy()
 
-        kacc = []
-        for k in top_k:
-            pred_top_k = torch.topk(logits, k=k).indices.cpu().numpy()
-            pred_top_k_true_scores = np.take_along_axis(true_scores, pred_top_k, axis=1)
-            kacc.append(np.mean(np.any(pred_top_k_true_scores == true_bestscore, axis=1)))
-        kacc = np.asarray(kacc)
+            kacc = []
+            for k in top_k:
+                pred_top_k = torch.topk(logits, k=k).indices.cpu().numpy()
+                pred_top_k_true_scores = np.take_along_axis(true_scores, pred_top_k, axis=1)
+                kacc.append(np.mean(np.any(pred_top_k_true_scores == true_bestscore, axis=1)))
+            kacc = np.asarray(kacc)
 
-        mean_kacc += kacc * batch_size
-        n_samples_processed += batch_size
+            mean_kacc += kacc * batch.num_graphs
+            n_samples_processed += batch.num_graphs
 
     mean_kacc /= n_samples_processed
 
@@ -88,7 +95,6 @@ if __name__ == '__main__':
     )
     args = parser.parse_args()
 
-    EARLY_STOPPING = 20
     POLICY_DICT = {'mlp1': MLP1Policy(), 'mlp2': MLP2Policy(), 'mlp3': MLP3Policy(),
                    'gnn1': GNN1Policy(), 'gnn2': GNN2Policy(), }
     PROBLEM = args.problem
@@ -115,19 +121,18 @@ if __name__ == '__main__':
 
 
     # --- TEST --- #
-    sample_files = [str(path) for path in Path(
+    test_files = [str(path) for path in Path(
         f'branch2learn/data/samples/{PROBLEM}/test'
         ).glob('sample_*.pkl')]
-    test_files = sample_files[:int(0.8*len(sample_files))]
 
-    test_data = GraphDataset(train_files)
-    test_loader = torch_geometric.data.DataLoader(train_data, batch_size=32, shuffle=False)
+    test_data = GraphDataset(test_files)
+    test_loader = torch_geometric.data.DataLoader(test_data, batch_size=32, shuffle=False)
 
     model_filename = f'branch2learn/models/{args.model}/{args.model}_{PROBLEM}.pkl'
-    policy.restore_state(model_filename)
+    policy.load_state_dict(torch.load(model_filename))
 
     log('Beginning testing')
-    test_kacc = process(policy=policy, data_loader=test_loader, device=DEVICE, optimizer=None)
+    test_kacc = process_kacc(policy=policy, data_loader=test_loader, device=DEVICE, top_k=range(1,11))
 
     log(f'Test kacc: {test_kacc}')
 

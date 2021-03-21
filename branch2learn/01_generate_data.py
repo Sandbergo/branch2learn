@@ -5,7 +5,8 @@ import pickle
 import argparse
 import numpy as np
 from pathlib import Path
-from utilities_general import Logger
+from typing import Callable
+from utilities.general import Logger
 
 
 class ExploreThenStrongBranch:
@@ -13,7 +14,7 @@ class ExploreThenStrongBranch:
     This custom observation function class will randomly return either strong branching scores
     or pseudocost scores (weak expert for exploration) when called at every node.
     """
-    def __init__(self, expert_probability):
+    def __init__(self, expert_probability: float):
         self.expert_probability = expert_probability
         self.pseudocosts_function = ecole.observation.Pseudocosts()
         self.strong_branching_function = ecole.observation.StrongBranchingScores()
@@ -38,7 +39,7 @@ class ExploreThenStrongBranch:
             return (self.pseudocosts_function.extract(model, done), False)
 
 
-def generate_instances(problem_type:str, num_samples:int, path:str, log):
+def generate_instances(problem_type: str, num_samples: int, path: str, log: Callable) -> None:
 
     scip_parameters = {'separating/maxrounds': 0, 'presolving/maxrestarts': 0, 'limits/time': 3600}
 
@@ -80,7 +81,7 @@ def generate_instances(problem_type:str, num_samples:int, path:str, log):
                                 node_observation.column_features)
 
             action = action_set[scores[action_set].argmax()]
-            # exit(0)
+
             # Only save samples if they are coming from the expert (strong branching)
             if scores_are_expert and not max_samples_reached:
 
@@ -111,9 +112,9 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    TRAIN_SIZE = 50  # 150000
-    VALID_SIZE = 10  # 30000
-    TEST_SIZE  = 10  # 30000
+    TRAIN_SIZE = 0     # 150000
+    VALID_SIZE = 1000  # 30000
+    TEST_SIZE  = 1000  # 30000
     PROBLEM_TYPE = args.problem
 
     Path('branch2learn/log/').mkdir(exist_ok=True)
@@ -134,3 +135,5 @@ if __name__ == "__main__":
     generate_instances(problem_type=PROBLEM_TYPE, num_samples=VALID_SIZE, path=valid_path, log=log)
     log('Generating test files')
     generate_instances(problem_type=PROBLEM_TYPE, num_samples=TEST_SIZE, path=test_path, log=log)
+
+    log('End of data generation.')
