@@ -2,17 +2,17 @@ import ecole
 
 if __name__ == "__main__":
     scip_parameters = {'separating/maxrounds': 0, 'presolving/maxrestarts': 0, 'limits/time': 3600}
-
+    # branching/relpscost/priority = 10000
     default_env = ecole.environment.Branching(
         observation_function=ecole.observation.Pseudocosts(),
         information_function={"nb_nodes": ecole.reward.NNodes().cumsum(),
                               "time": ecole.reward.SolvingTime().cumsum()},
         scip_params=scip_parameters)
-    default_env = ecole.environment.Configuring(
+    """default_env = ecole.environment.Configuring(
         observation_function=None,
         information_function={"nb_nodes": ecole.reward.NNodes().cumsum(),
                               "time": ecole.reward.SolvingTime().cumsum()},
-        scip_params=scip_parameters)
+        scip_params=scip_parameters)"""
 
     generators = {
         'setcover': ecole.instance.SetCoverGenerator(
@@ -22,7 +22,7 @@ if __name__ == "__main__":
         'indset': ecole.instance.IndependentSetGenerator(
             n_nodes=500, graph_type="barabasi_albert", affinity=4),
         'facilities': ecole.instance.CapacitatedFacilityLocationGenerator(
-            n_customers=100, n_facilities=100, continuous_assignment = True)
+            n_customers=100, n_facilities=100)
         }
 
     for problem_type, generator in generators.items():

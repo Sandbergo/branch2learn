@@ -182,3 +182,4 @@ dmypy.json
 *.txt
 *.pkl
 **/.vscode/**
+*.lp

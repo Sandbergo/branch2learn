@@ -7,6 +7,7 @@ import numpy as np
 from pathlib import Path
 from typing import Callable
 from utilities.general import Logger
+from tqdm import tqdm
 
 
 class ExploreThenStrongBranch:
@@ -50,28 +51,18 @@ def generate_instances(problem_type: str, num_samples: int, path: str, log: Call
 
     env.seed(0)
 
-    generators = {
-        'setcover': ecole.instance.SetCoverGenerator(
-            n_rows=500, n_cols=1000, density=0.05),
-        'cauctions': ecole.instance.CombinatorialAuctionGenerator(
-            n_items=100, n_bids=500, add_item_prob=0.7),
-        'indset': ecole.instance.IndependentSetGenerator(
-            n_nodes=500, graph_type="barabasi_albert", affinity=4),
-        'facilities': ecole.instance.CapacitatedFacilityLocationGenerator(
-            n_customers=100, n_facilities=100)
-        }
 
     log(f'Generating {num_samples} {problem_type} instances')
-    instances = generators[problem_type]
+    train_files = [str(path) for path in Path(
+        f'branch2learn/data/instances/{problem_type}/train'
+        ).glob('instance_*.lp')]
 
     episode_counter, sample_counter = 0, 0
 
     # We will solve problems (run episodes) until we have saved enough samples
-    max_samples_reached = False
-    while not max_samples_reached:
+    for _file in train_files:
         episode_counter += 1
-
-        observation, action_set, _, done, _ = env.reset(next(instances))
+        observation, action_set, _, done, _ = env.reset(_file)
         while not done:
             (scores, scores_are_expert), node_observation = observation
 
@@ -83,7 +74,7 @@ def generate_instances(problem_type: str, num_samples: int, path: str, log: Call
             action = action_set[scores[action_set].argmax()]
 
             # Only save samples if they are coming from the expert (strong branching)
-            if scores_are_expert and not max_samples_reached:
+            if scores_are_expert:
 
                 sample_counter += 1
 
@@ -93,12 +84,9 @@ def generate_instances(problem_type: str, num_samples: int, path: str, log: Call
                 with gzip.open(filename, 'wb') as f:
                     pickle.dump(data, f)
 
-                if sample_counter >= num_samples:
-                    max_samples_reached = True
-
             observation, action_set, _, done, _ = env.step(action)
 
-        log(f"Episode {episode_counter}, {sample_counter} / {num_samples} samples collected")
+        log(f"Episode {episode_counter}, {sample_counter} samples collected")
 
     return
 
@@ -113,9 +101,6 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    TRAIN_SIZE = 0  #50_000     # 150000
-    VALID_SIZE = 10_000  # 30000
-    TEST_SIZE  = 10_000  # 30000
     PROBLEM_TYPE = args.problem
 
     Path('branch2learn/log/').mkdir(exist_ok=True)
@@ -131,10 +116,10 @@ if __name__ == "__main__":
     os.makedirs(Path(test_path), exist_ok=True)
 
     log('Generating training files')
-    generate_instances(problem_type=PROBLEM_TYPE, num_samples=TRAIN_SIZE, path=train_path, log=log)
+    generate_instances(problem_type=PROBLEM_TYPE, num_samples=0, path=train_path, log=log)
     log('Generating valid files')
-    generate_instances(problem_type=PROBLEM_TYPE, num_samples=VALID_SIZE, path=valid_path, log=log)
+    generate_instances(problem_type=PROBLEM_TYPE, num_samples=0, path=valid_path, log=log)
     log('Generating test files')
-    generate_instances(problem_type=PROBLEM_TYPE, num_samples=TEST_SIZE, path=test_path, log=log)
+    generate_instances(problem_type=PROBLEM_TYPE, num_samples=0, path=test_path, log=log)
 
     log('End of data generation.')
