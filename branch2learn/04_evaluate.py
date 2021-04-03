@@ -77,23 +77,22 @@ if __name__ == "__main__":
             ecole.instance.SetCoverGenerator(n_rows=1000, n_cols=1000, density=0.05),
             ecole.instance.SetCoverGenerator(n_rows=2000, n_cols=1000, density=0.05)
         ),
+        'indset': (
+            ecole.instance.IndependentSetGenerator(n_nodes=750, graph_type="barabasi_albert", affinity=4),
+            ecole.instance.IndependentSetGenerator(n_nodes=1000, graph_type="barabasi_albert", affinity=4),
+            ecole.instance.IndependentSetGenerator(n_nodes=1500, graph_type="barabasi_albert", affinity=4),
+
+        ),
+        'facilitites': (
+            ecole.instance.CapacitatedFacilityLocationGenerator(n_customers=100, n_facilities=100, continuous_assignment=True),
+            ecole.instance.CapacitatedFacilityLocationGenerator(n_customers=100, n_facilities=200, continuous_assignment=True),
+            ecole.instance.CapacitatedFacilityLocationGenerator(n_customers=100, n_facilities=400, continuous_assignment=True),
+        )
         'cauctions': (
             ecole.instance.CombinatorialAuctionGenerator(n_items=100, n_bids=500),
             ecole.instance.CombinatorialAuctionGenerator(n_items=100, n_bids=1000),
             ecole.instance.CombinatorialAuctionGenerator(n_items=100, n_bids=1500)
         ),
-
-        'indset': (
-            ecole.instance.IndependentSetGenerator(n_nodes=750, graph_type="erdos_renyi"),
-            ecole.instance.IndependentSetGenerator(n_nodes=1000, graph_type="erdos_renyi"),
-            ecole.instance.IndependentSetGenerator(n_nodes=1500, graph_type="erdos_renyi"),
-
-        ),
-        'facilitites': (
-            ecole.instance.CapacitatedFacilityLocationGenerator(n_customers=100, n_facilities=100),
-            ecole.instance.CapacitatedFacilityLocationGenerator(n_customers=100, n_facilities=200),
-            ecole.instance.CapacitatedFacilityLocationGenerator(n_customers=100, n_facilities=400),
-        )
         }
     sizes = ['small', 'medium', 'large']
     for problem_type in generators.keys():

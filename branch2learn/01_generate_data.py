@@ -113,7 +113,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    TRAIN_SIZE = 0  #50_000     # 150000
+    TRAIN_SIZE = 50_000     # 150000
     VALID_SIZE = 10_000  # 30000
     TEST_SIZE  = 10_000  # 30000
     PROBLEM_TYPE = args.problem

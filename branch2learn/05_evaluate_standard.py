@@ -18,12 +18,7 @@ if __name__ == "__main__":
     parser.add_argument(
         '-b', '--brancher',
         help='Brancher name.',
-        choices=['pc', 'fsb'],
-    )
-    parser.add_argument(
-        '-p', '--problem',
-        help='MILP instance type to process.',
-        choices=['setcover', 'cauctions', 'facilities', 'indset'],
+        choices=['pc', 'fsb', 'rpc'],
     )
     parser.add_argument(
         '-s', '--seed',
@@ -33,7 +28,6 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    PROBLEM = args.problem
     POLICY_DICT = {'fsb': ecole.observation.StrongBranchingScores(), 
                    'pc': ecole.observation.Pseudocosts()}
 
@@ -41,10 +35,9 @@ if __name__ == "__main__":
     log = Logger(filename='branch2learn/log/05_evaluate_standard')
 
     log(f'Policy:   {args.brancher}')
-    log(f'Problem: {PROBLEM}')
     policy = POLICY_DICT[args.brancher]
 
-    scip_parameters = {'separating/maxrounds': 0, 'presolving/maxrestarts': 0, 'limits/time': 100} # TODO: revert to 2700
+    scip_parameters = {'separating/maxrounds': 0, 'presolving/maxrestarts': 0, 'limits/time': 1000} # TODO: revert to 2700
 
     default_env = ecole.environment.Branching(
         observation_function=policy,
@@ -53,28 +46,27 @@ if __name__ == "__main__":
         scip_params=scip_parameters)
 
     generators = {
+        'facilitites': (
+            ecole.instance.CapacitatedFacilityLocationGenerator(n_customers=100, n_facilities=100),
+            #ecole.instance.CapacitatedFacilityLocationGenerator(n_customers=100, n_facilities=200),
+            #ecole.instance.CapacitatedFacilityLocationGenerator(n_customers=100, n_facilities=400),
+        ),
         'setcover':(
             ecole.instance.SetCoverGenerator(n_rows=500, n_cols=1000, density=0.05),
-            ecole.instance.SetCoverGenerator(n_rows=1000, n_cols=1000, density=0.05),
-            ecole.instance.SetCoverGenerator(n_rows=2000, n_cols=1000, density=0.05)
+            #ecole.instance.SetCoverGenerator(n_rows=1000, n_cols=1000, density=0.05),
+            #ecole.instance.SetCoverGenerator(n_rows=2000, n_cols=1000, density=0.05)
+        ),
+        'indset': (
+            ecole.instance.IndependentSetGenerator(n_nodes=750, graph_type="barabasi_albert", affinity=4),
+            #ecole.instance.IndependentSetGenerator(n_nodes=1000, graph_type="barabasi_albert", affinity=4),
+            #ecole.instance.IndependentSetGenerator(n_nodes=1500, graph_type="barabasi_albert", affinity=4),
+
         ),
         'cauctions': (
             ecole.instance.CombinatorialAuctionGenerator(n_items=100, n_bids=500),
-            ecole.instance.CombinatorialAuctionGenerator(n_items=100, n_bids=1000),
-            ecole.instance.CombinatorialAuctionGenerator(n_items=100, n_bids=1500)
+            #ecole.instance.CombinatorialAuctionGenerator(n_items=100, n_bids=1000),
+            #ecole.instance.CombinatorialAuctionGenerator(n_items=100, n_bids=1500)
         ),
-
-        'indset': (
-            ecole.instance.IndependentSetGenerator(n_nodes=750, graph_type="erdos_renyi"),
-            ecole.instance.IndependentSetGenerator(n_nodes=1000, graph_type="erdos_renyi"),
-            ecole.instance.IndependentSetGenerator(n_nodes=1500, graph_type="erdos_renyi"),
-
-        ),
-        'facilitites': (
-            ecole.instance.CapacitatedFacilityLocationGenerator(n_customers=100, n_facilities=100),
-            ecole.instance.CapacitatedFacilityLocationGenerator(n_customers=100, n_facilities=200),
-            ecole.instance.CapacitatedFacilityLocationGenerator(n_customers=100, n_facilities=400),
-        )
         }
     sizes = ['small', 'medium', 'large']
     for problem_type in generators.keys():
@@ -82,7 +74,7 @@ if __name__ == "__main__":
             node_list,time_list = [],[]
             completed = 0
             log(f'------ {problem_type}, {sizes[i]} ------')
-            for instance_count, instance in zip(range(5), instances):
+            for instance_count, instance in zip(range(20), instances):
 
                 observation, action_set, _, done, info = default_env.reset(instance)
 

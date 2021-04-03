@@ -112,7 +112,7 @@ if __name__ == '__main__':
     torch.manual_seed(rng.randint(np.iinfo(int).max))
 
     Path('branch2learn/log/').mkdir(exist_ok=True)
-    log = Logger(filename='branch2learn/log/02_train')
+    log = Logger(filename='branch2learn/log/03_test')
 
     log(f'Model:   {args.model}')
     log(f'Problem: {PROBLEM}')

@@ -28,7 +28,7 @@ if __name__ == '__main__':
         '-g', '--gpu',
         help='CUDA GPU id (-1 for CPU).',
         type=int,
-        default=-1,
+        default=0,
     )
     parser.add_argument(
         '-s', '--seed',
@@ -39,7 +39,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     LEARNING_RATE = 0.001
-    NB_EPOCHS = 1
+    NB_EPOCHS = 60
     PATIENCE = 10
     EARLY_STOPPING = 20
     POLICY_DICT = {'mlp1': MLP1Policy(), 'mlp2': MLP2Policy(), 'mlp3': MLP3Policy(),
@@ -78,9 +78,9 @@ if __name__ == '__main__':
         ).glob('sample_*.pkl')]
 
     train_data = GraphDataset(train_files)
-    train_loader = torch_geometric.data.DataLoader(train_data, batch_size=32, shuffle=False)
+    train_loader = torch_geometric.data.DataLoader(train_data, batch_size=32, shuffle=True)
     valid_data = GraphDataset(valid_files)
-    valid_loader = torch_geometric.data.DataLoader(valid_data, batch_size=128, shuffle=False)
+    valid_loader = torch_geometric.data.DataLoader(valid_data, batch_size=64, shuffle=False)
 
     model_filename = f'branch2learn/models/{args.model}/{args.model}_{PROBLEM}.pkl'
     optimizer = torch.optim.Adam(policy.parameters(), lr=LEARNING_RATE)
@@ -90,9 +90,6 @@ if __name__ == '__main__':
     best_loss = np.inf
 
     log('Beginning training')
-    valid_loss, valid_acc = process(
-        policy=policy, data_loader=valid_loader, device=DEVICE, optimizer=None)
-    log(f'Valid loss: {valid_loss:0.3f}, accuracy {valid_acc:0.3f}')
     valid_loss, valid_acc = process(
         policy=policy, data_loader=valid_loader, device=DEVICE, optimizer=None)
     log(f'Valid loss: {valid_loss:0.3f}, accuracy {valid_acc:0.3f}')
@@ -131,4 +128,4 @@ if __name__ == '__main__':
     log(f'Saving model as {model_filename}')
     torch.save(policy.state_dict(), model_filename)
     
-    log('End of training.')
+    log('End of training.\n\n')
