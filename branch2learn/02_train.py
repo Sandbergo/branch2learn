@@ -66,7 +66,7 @@ if __name__ == '__main__':
     log(f'Device:  {DEVICE}')
     log(f'Lr:      {LEARNING_RATE}')
     log(f'Epochs:  {NB_EPOCHS}')
-    log(str(policy))
+    #log(str(policy))
 
 
     # --- TRAIN --- #
