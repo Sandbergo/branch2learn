@@ -40,7 +40,7 @@ class ExploreThenStrongBranch:
             return (self.pseudocosts_function.extract(model, done), False)
 
 
-def generate_instances(problem_type: str, num_samples: int, path: str, log: Callable) -> None:
+def generate_instances(instance_path: str, sample_path: str, log: Callable) -> None:
 
     scip_parameters = {'separating/maxrounds': 0, 'presolving/maxrestarts': 0, 'limits/time': 3600}
 
@@ -50,26 +50,18 @@ def generate_instances(problem_type: str, num_samples: int, path: str, log: Call
         scip_params=scip_parameters)
 
     env.seed(0)
-
-
-    log(f'Generating {num_samples} {problem_type} instances')
-    train_files = [str(path) for path in Path(
-        f'branch2learn/data/instances/{problem_type}/train'
-        ).glob('instance_*.lp')]
-
+    
+    instance_files = [str(path) for path in Path(instance_path).glob('instance_*.lp')]
+    log(f'Generating from {len(instance_files)} instances')
+    
     episode_counter, sample_counter = 0, 0
 
     # We will solve problems (run episodes) until we have saved enough samples
-    for _file in train_files:
+    for _file in instance_files:
         episode_counter += 1
         observation, action_set, _, done, _ = env.reset(_file)
         while not done:
             (scores, scores_are_expert), node_observation = observation
-
-            node_observation = (node_observation.row_features,
-                                (node_observation.edge_features.indices,
-                                node_observation.edge_features.values),
-                                node_observation.column_features)
 
             action = action_set[scores[action_set].argmax()]
 
@@ -78,15 +70,20 @@ def generate_instances(problem_type: str, num_samples: int, path: str, log: Call
 
                 sample_counter += 1
 
+                node_observation = (node_observation.row_features,
+                                (node_observation.edge_features.indices,
+                                node_observation.edge_features.values),
+                                node_observation.column_features)
+
                 data = [node_observation, action, action_set, scores]
-                filename = f'{path}/sample_{sample_counter}.pkl'
+                filename = f'{sample_path}/sample_{sample_counter}.pkl'
 
                 with gzip.open(filename, 'wb') as f:
                     pickle.dump(data, f)
 
             observation, action_set, _, done, _ = env.step(action)
-
-        log(f"Episode {episode_counter}, {sample_counter} samples collected")
+        if episode_counter % 5 == 0:
+            log(f"Episode {episode_counter}, {sample_counter} samples collected")
 
     return
 
@@ -106,20 +103,25 @@ if __name__ == "__main__":
     Path('branch2learn/log/').mkdir(exist_ok=True)
     log = Logger(filename='branch2learn/log/01_generate_data')
 
-    basedir = f'branch2learn/data/samples/{PROBLEM_TYPE}/'
+    basedir_samp = f'branch2learn/data/samples/{PROBLEM_TYPE}/'
+    basedir_inst = f'branch2learn/data/instances/{PROBLEM_TYPE}/'
 
-    train_path = f'{basedir}/train/'
-    os.makedirs(Path(train_path), exist_ok=True)
-    valid_path = f'{basedir}/valid/'
-    os.makedirs(Path(valid_path), exist_ok=True)
-    test_path = f'{basedir}/test/'
-    os.makedirs(Path(test_path), exist_ok=True)
+    train_path_inst = f'{basedir_inst}/train/'
+    valid_path_inst = f'{basedir_inst}/valid/'
+    test_path_inst = f'{basedir_inst}/test/'
 
-    log('Generating training files')
-    generate_instances(problem_type=PROBLEM_TYPE, num_samples=0, path=train_path, log=log)
+    train_path_samp = f'{basedir_samp}/train/'
+    os.makedirs(Path(train_path_samp), exist_ok=True)
+    valid_path_samp = f'{basedir_samp}/valid/'
+    os.makedirs(Path(valid_path_samp), exist_ok=True)
+    test_path_samp = f'{basedir_samp}/test/'
+    os.makedirs(Path(test_path_samp), exist_ok=True)
+
+    #log('Generating training files')
+    #generate_instances(problem_type=PROBLEM_TYPE, num_samples=0, path=train_path, log=log)
     log('Generating valid files')
-    generate_instances(problem_type=PROBLEM_TYPE, num_samples=0, path=valid_path, log=log)
+    generate_instances(instance_path=valid_path_inst, sample_path=valid_path_samp, log=log)
     log('Generating test files')
-    generate_instances(problem_type=PROBLEM_TYPE, num_samples=0, path=test_path, log=log)
+    generate_instances(instance_path=test_path_inst, sample_path=test_path_samp, log=log)
 
     log('End of data generation.')

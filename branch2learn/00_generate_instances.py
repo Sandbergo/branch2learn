@@ -692,18 +692,18 @@ if __name__ == '__main__':
         filenames.extend([os.path.join(lp_dir, f'instance_{i+1}.lp') for i in range(n)])
         nitemss.extend([number_of_items] * n)
         nbidss.extend([number_of_bids ] * n)
-
+        
         # small transfer instances
-        n = 100
+        n = 1000
         number_of_items = 100
         number_of_bids = 500
         lp_dir = f'{BASEDIR}/cauctions/test/small'
         print(f"{n} instances in {lp_dir}")
-        os.makedirs(lp_dir)
+        #os.makedirs(lp_dir)
         filenames.extend([os.path.join(lp_dir, f'instance_{i+1}.lp') for i in range(n)])
         nitemss.extend([number_of_items] * n)
         nbidss.extend([number_of_bids ] * n)
-
+        
         # medium transfer instances
         n = 100
         number_of_items = 200
@@ -736,7 +736,7 @@ if __name__ == '__main__':
         filenames.extend([os.path.join(lp_dir, f'instance_{i+1}.lp') for i in range(n)])
         nitemss.extend([number_of_items] * n)
         nbidss.extend([number_of_bids ] * n)
-
+        
         # actually generate the instances
         for filename, nitems, nbids in zip(filenames, nitemss, nbidss):
             print(f"  generating file {filename} ...")

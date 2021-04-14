@@ -117,7 +117,7 @@ if __name__ == '__main__':
     log(f'Model:   {args.model}')
     log(f'Problem: {PROBLEM}')
     log(f'Device:  {DEVICE}')
-    log(str(policy))
+    #log(str(policy))
 
 
     # --- TEST --- #
@@ -130,10 +130,11 @@ if __name__ == '__main__':
 
     model_filename = f'branch2learn/models/{args.model}/{args.model}_{PROBLEM}.pkl'
     policy.load_state_dict(torch.load(model_filename))
+    policy.eval()
 
     log('Beginning testing')
     test_kacc = process_kacc(policy=policy, data_loader=test_loader, device=DEVICE, top_k=range(1,11))
 
-    log(f'Test kacc: {test_kacc}')
+    log(f'Test kacc: {round(test_kacc, 3}')
 
     log('End of testing.')
