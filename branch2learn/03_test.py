@@ -1,16 +1,24 @@
+"""
+Model training script.
+
+File adapted from https://github.com/ds4dm/ecole
+by Lars Sandberg @Sandbergo
+May 2021
+"""
+
+import os
+import argparse
 import numpy as np
 import torch
 import torch_geometric
 import torch.nn.functional as F
-import os
-import argparse
 from pathlib import Path
 from typing import List
 
 from utilities.general import Logger
 from utilities.model import pad_tensor
 from utilities.data import GraphDataset
-from models.mlp import MLP1Policy, MLP2Policy, MLP3Policy, MLP4Policy
+from models.mlp import MLP1Policy, MLP2Policy, MLP3Policy
 from models.gnn import GNN1Policy, GNN2Policy
 
 
@@ -74,7 +82,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '-m', '--model',
         help='Model name.',
-        choices=['gnn1', 'gnn2', 'mlp1', 'mlp2', 'mlp3', 'mlp4'],
+        choices=['gnn1', 'gnn2', 'mlp1', 'mlp2', 'mlp3'],
     )
     parser.add_argument(
         '-p', '--problem',
@@ -95,7 +103,7 @@ if __name__ == '__main__':
     )
     args = parser.parse_args()
 
-    POLICY_DICT = {'mlp1': MLP1Policy(), 'mlp2': MLP2Policy(), 'mlp3': MLP3Policy(),  'mlp4': MLP4Policy(),
+    POLICY_DICT = {'mlp1': MLP1Policy(), 'mlp2': MLP2Policy(), 'mlp3': MLP3Policy(),
                    'gnn1': GNN1Policy(), 'gnn2': GNN2Policy(), }
     PROBLEM = args.problem
 
@@ -117,7 +125,6 @@ if __name__ == '__main__':
     log(f'Model:   {args.model}')
     log(f'Problem: {PROBLEM}')
     log(f'Device:  {DEVICE}')
-    #log(str(policy))
 
 
     # --- TEST --- #

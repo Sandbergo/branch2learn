@@ -1,3 +1,11 @@
+"""
+Data utilities.
+
+File adapted from https://github.com/ds4dm/ecole
+by Lars Sandberg @Sandbergo
+May 2021
+"""
+
 import gzip
 import pickle
 import torch

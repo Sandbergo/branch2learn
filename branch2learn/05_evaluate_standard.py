@@ -1,3 +1,11 @@
+"""
+Policy evaluation script.
+
+File adapted from https://github.com/ds4dm/ecole
+by Lars Sandberg @Sandbergo
+May 2021
+"""
+
 import numpy as np
 import torch
 import torch_geometric
@@ -15,6 +23,11 @@ if __name__ == "__main__":
         '-b', '--brancher',
         help='Brancher name.',
         choices=['pc', 'fsb', 'rpc'],
+    )
+    parser.add_argument(
+        '-p', '--problem',
+        help='MILP instance type to process.',
+        choices=['setcover', 'cauctions', 'facilities', 'indset'],
     )
     parser.add_argument(
         '-s', '--seed',
@@ -43,42 +56,24 @@ if __name__ == "__main__":
                               "time": ecole.reward.SolvingTime().cumsum()},
         scip_params=scip_parameters)
 
-    generators = {
-        'cauctions': (
-           [str(path) for path in Path(
-           f'branch2learn/data/instances/cauctions/test/').glob('instance_*.lp')],
-        ),
-        'setcover': (
-           [str(path) for path in Path(
-           f'branch2learn/data/instances/setcover/test/').glob('instance_*.lp')],
-        )
-        }
+    problems = [str(path) for path in Path(
+           f'branch2learn/data/instances/{args.problem}/eval/').glob('instance_*.lp')]
 
-    sizes = ['small', 'medium', 'large']
-    for problem_type in generators.keys():
-        for i, instances in enumerate(generators[problem_type]):
-            if i==0:
-                #break
-                num_samples=250
-            elif i==1:
-                num_samples=50
-            else:
-                num_samples=20
-            completed = 0
-            node_list,time_list = [],[]
+    completed = 0
+    node_list,time_list = [],[]
 
-            log(f'------ {problem_type}, {sizes[i]} ------')
-            for instance_count, instance in zip(range(num_samples), instances):
-        
-                _, _, _, _, _ = env.reset(instance)
-                _, _, _, done, info = env.step({})
-                node_list.append(info['nb_nodes'])
-                time_list.append(info['time'])
-                if info['time'] < 0.99*TIME_LIMIT:
-                    completed += done
-            log(f"  time {np.mean(time_list): >6.2f} \pm {np.std(time_list): >6.2f}  "
-                f"| nb nodes    {int(np.mean(node_list)): >4d} \pm {int(np.std(node_list)): >4d} "
-                f"| time/node  {1000*np.mean(time_list)/np.mean(node_list): >6.1f} ms "
-                f"| completed   {completed : >2d}")
+    for instance_count, instance in zip(range(num_samples), instances):
+
+        _, _, _, _, _ = env.reset(instance)
+        _, _, _, done, info = env.step({})
+        node_list.append(info['nb_nodes'])
+        time_list.append(info['time'])
+        if info['time'] < 0.99*TIME_LIMIT:
+            completed += done
+    
+    log(f"  time {np.mean(time_list): >6.2f} \pm {np.std(time_list): >6.2f}  "
+        f"| nb nodes    {int(np.mean(node_list)): >4d} \pm {int(np.std(node_list)): >4d} "
+        f"| time/node  {1000*np.mean(time_list)/np.mean(node_list): >6.1f} ms "
+        f"| completed   {completed : >2d}")
 
     log('End of evaluation.')   

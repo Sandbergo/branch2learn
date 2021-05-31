@@ -1,3 +1,11 @@
+"""
+Instance generation script.
+
+File adapted from https://github.com/ds4dm/learn2branch
+by Lars Sandberg @Sandbergo
+May 2021
+"""
+
 import os
 import argparse
 import numpy as np
@@ -624,28 +632,9 @@ if __name__ == '__main__':
         filenames.extend([os.path.join(lp_dir, f'instance_{i+1}.lp') for i in range(n)])
         nnodess.extend([number_of_nodes] * n)
 
-        # small transfer instances
-        n = 100
-        number_of_nodes = 750
-        lp_dir = f'{BASEDIR}/indset/test/small'
-        print(f"{n} instances in {lp_dir}")
-        os.makedirs(lp_dir)
-        filenames.extend([os.path.join(lp_dir, f'instance_{i+1}.lp') for i in range(n)])
-        nnodess.extend([number_of_nodes] * n)
-
-        # medium transfer instances
-        n = 100
-        number_of_nodes = 1000
-        lp_dir = f'{BASEDIR}/indset/test/medium'
-        print(f"{n} instances in {lp_dir}")
-        os.makedirs(lp_dir)
-        filenames.extend([os.path.join(lp_dir, f'instance_{i+1}.lp') for i in range(n)])
-        nnodess.extend([number_of_nodes] * n)
-
-        # big transfer instances
-        n = 100
-        number_of_nodes = 1500
-        lp_dir = f'{BASEDIR}/indset/test/large'
+        # eval instances
+        n = 500
+        lp_dir = f'{BASEDIR}/indset/eval'
         print(f"{n} instances in {lp_dir}")
         os.makedirs(lp_dir)
         filenames.extend([os.path.join(lp_dir, f'instance_{i+1}.lp') for i in range(n)])
@@ -653,10 +642,9 @@ if __name__ == '__main__':
 
         # test instances
         n = 500
-        number_of_nodes = 750
         lp_dir = f'{BASEDIR}/indset/test'
         print(f"{n} instances in {lp_dir}")
-        # os.makedirs(lp_dir)
+        os.makedirs(lp_dir)
         filenames.extend([os.path.join(lp_dir, f'instance_{i+1}.lp') for i in range(n)])
         nnodess.extend([number_of_nodes] * n)
 
@@ -693,46 +681,20 @@ if __name__ == '__main__':
         nitemss.extend([number_of_items] * n)
         nbidss.extend([number_of_bids ] * n)
         
-        # small transfer instances
-        n = 1000
-        number_of_items = 100
-        number_of_bids = 500
-        lp_dir = f'{BASEDIR}/cauctions/test/small'
+        # eval instances
+        n = 500
+        lp_dir = f'{BASEDIR}/cauctions/eval'
         print(f"{n} instances in {lp_dir}")
-        #os.makedirs(lp_dir)
+        os.makedirs(lp_dir)
         filenames.extend([os.path.join(lp_dir, f'instance_{i+1}.lp') for i in range(n)])
         nitemss.extend([number_of_items] * n)
         nbidss.extend([number_of_bids ] * n)
         
-        # medium transfer instances
-        n = 100
-        number_of_items = 200
-        number_of_bids = 1000
-        lp_dir = f'{BASEDIR}/cauctions/test/medium'
-        print(f"{n} instances in {lp_dir}")
-        os.makedirs(lp_dir)
-        filenames.extend([os.path.join(lp_dir, f'instance_{i+1}.lp') for i in range(n)])
-        nitemss.extend([number_of_items] * n)
-        nbidss.extend([number_of_bids ] * n)
-
-        # big transfer instances
-        n = 100
-        number_of_items = 300
-        number_of_bids = 1500
-        lp_dir = f'{BASEDIR}/cauctions/test/large'
-        print(f"{n} instances in {lp_dir}")
-        os.makedirs(lp_dir)
-        filenames.extend([os.path.join(lp_dir, f'instance_{i+1}.lp') for i in range(n)])
-        nitemss.extend([number_of_items] * n)
-        nbidss.extend([number_of_bids ] * n)
-
         # test instances
-        n = 2000
-        number_of_items = 100
-        number_of_bids = 500
+        n = 500
         lp_dir = f'{BASEDIR}/cauctions/test'
         print(f"{n} instances in {lp_dir}")
-        #os.makedirs(lp_dir)
+        os.makedirs(lp_dir)
         filenames.extend([os.path.join(lp_dir, f'instance_{i+1}.lp') for i in range(n)])
         nitemss.extend([number_of_items] * n)
         nbidss.extend([number_of_bids ] * n)
@@ -773,33 +735,9 @@ if __name__ == '__main__':
         nfacilitiess.extend([number_of_facilities] * n)
         ratios.extend([ratio] * n)
 
-        # small transfer instances
-        n = 100
-        number_of_customers = 100
-        number_of_facilities = 100
-        lp_dir = f'{BASEDIR}/facilities/test/small'
-        print(f"{n} instances in {lp_dir}")
-        os.makedirs(lp_dir)
-        filenames.extend([os.path.join(lp_dir, f'instance_{i+1}.lp') for i in range(n)])
-        ncustomerss.extend([number_of_customers] * n)
-        nfacilitiess.extend([number_of_facilities] * n)
-        ratios.extend([ratio] * n)
-
-        # medium transfer instances
-        n = 100
-        number_of_customers = 200
-        lp_dir = f'{BASEDIR}/facilities/test/medium'
-        print(f"{n} instances in {lp_dir}")
-        os.makedirs(lp_dir)
-        filenames.extend([os.path.join(lp_dir, f'instance_{i+1}.lp') for i in range(n)])
-        ncustomerss.extend([number_of_customers] * n)
-        nfacilitiess.extend([number_of_facilities] * n)
-        ratios.extend([ratio] * n)
-
-        # big transfer instances
-        n = 100
-        number_of_customers = 400
-        lp_dir = f'{BASEDIR}/facilities/test/large'
+        # eval instances
+        n = 500
+        lp_dir = f'{BASEDIR}/facilities/eval'
         print(f"{n} instances in {lp_dir}")
         os.makedirs(lp_dir)
         filenames.extend([os.path.join(lp_dir, f'instance_{i+1}.lp') for i in range(n)])
@@ -809,11 +747,9 @@ if __name__ == '__main__':
 
         # test instances
         n = 500
-        number_of_customers = 100
-        number_of_facilities = 100
         lp_dir = f'{BASEDIR}/facilities/test'
         print(f"{n} instances in {lp_dir}")
-        # os.makedirs(lp_dir)
+        os.makedirs(lp_dir)
         filenames.extend([os.path.join(lp_dir, f'instance_{i+1}.lp') for i in range(n)])
         ncustomerss.extend([number_of_customers] * n)
         nfacilitiess.extend([number_of_facilities] * n)

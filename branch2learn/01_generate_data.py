@@ -1,3 +1,11 @@
+"""
+Data generation script.
+
+File adapted from https://github.com/ds4dm/ecole
+by Lars Sandberg @Sandbergo
+May 2021
+"""
+
 import ecole
 import os
 import gzip
@@ -6,6 +14,7 @@ import argparse
 import numpy as np
 from pathlib import Path
 from typing import Callable
+
 from utilities.general import Logger
 
 
@@ -44,7 +53,7 @@ def generate_instances(problem_type: str, num_samples: int, path: str, log: Call
     scip_parameters = {'separating/maxrounds': 0, 'presolving/maxrestarts': 0, 'limits/time': 3600}
 
     env = ecole.environment.Branching(
-        observation_function=(ExploreThenStrongBranch(expert_probability=0.2),
+        observation_function=(ExploreThenStrongBranch(expert_probability=0.05),
                               ecole.observation.NodeBipartite()),
         scip_params=scip_parameters)
 
@@ -61,7 +70,9 @@ def generate_instances(problem_type: str, num_samples: int, path: str, log: Call
             n_customers=100, n_facilities=100)
         }
 
+    
     log(f'Generating {num_samples} {problem_type} instances')
+    log(f'Saving samples in {path}')
     instances = generators[problem_type]
 
     episode_counter, sample_counter = 0, 0
@@ -98,7 +109,8 @@ def generate_instances(problem_type: str, num_samples: int, path: str, log: Call
 
             observation, action_set, _, done, _ = env.step(action)
 
-        log(f"Episode {episode_counter}, {sample_counter} / {num_samples} samples collected")
+        if episode_counter % 5 == 0:
+            log(f"Episode {episode_counter}, {sample_counter} / {num_samples} samples collected")
 
     return
 
@@ -113,9 +125,9 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    TRAIN_SIZE = 50_000     # 150000
-    VALID_SIZE = 10_000  # 30000
-    TEST_SIZE  = 10_000  # 30000
+    TRAIN_SIZE = 50_000   
+    VALID_SIZE = 10_000  
+    TEST_SIZE  = 10_000  
     PROBLEM_TYPE = args.problem
 
     Path('branch2learn/log/').mkdir(exist_ok=True)
@@ -123,18 +135,18 @@ if __name__ == "__main__":
 
     basedir = f'branch2learn/data/samples/{PROBLEM_TYPE}/'
 
-    train_path = f'{basedir}/train/'
+    valid_path = f'{basedir}/train/'
     os.makedirs(Path(train_path), exist_ok=True)
     valid_path = f'{basedir}/valid/'
     os.makedirs(Path(valid_path), exist_ok=True)
     test_path = f'{basedir}/test/'
     os.makedirs(Path(test_path), exist_ok=True)
 
-    log('Generating training files')
+
     generate_instances(problem_type=PROBLEM_TYPE, num_samples=TRAIN_SIZE, path=train_path, log=log)
-    log('Generating valid files')
+
     generate_instances(problem_type=PROBLEM_TYPE, num_samples=VALID_SIZE, path=valid_path, log=log)
-    log('Generating test files')
+
     generate_instances(problem_type=PROBLEM_TYPE, num_samples=TEST_SIZE, path=test_path, log=log)
 
     log('End of data generation.')

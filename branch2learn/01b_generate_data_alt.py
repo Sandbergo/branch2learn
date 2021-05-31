@@ -1,3 +1,11 @@
+"""
+Instance generation script.
+
+File adapted from https://github.com/ds4dm/learn2branch
+by Lars Sandberg @Sandbergo
+May 2021
+"""
+
 import ecole
 import os
 import gzip
@@ -6,8 +14,8 @@ import argparse
 import numpy as np
 from pathlib import Path
 from typing import Callable
+
 from utilities.general import Logger
-from tqdm import tqdm
 
 
 class ExploreThenStrongBranch:
@@ -40,7 +48,7 @@ class ExploreThenStrongBranch:
             return (self.pseudocosts_function.extract(model, done), False)
 
 
-def generate_instances(instance_path: str, sample_path: str, log: Callable) -> None:
+def generate_instances(instance_path: str, sample_path: str, num_samples: int, log: Callable) -> None:
 
     scip_parameters = {'separating/maxrounds': 0, 'presolving/maxrestarts': 0, 'limits/time': 3600}
 
@@ -70,7 +78,7 @@ def generate_instances(instance_path: str, sample_path: str, log: Callable) -> N
                 if scores_are_expert:
 
                     sample_counter += 1
-                    if sample_counter > 10_000:
+                    if sample_counter > num_samples:
                         return
 
                     node_observation = (node_observation.row_features,
@@ -89,8 +97,6 @@ def generate_instances(instance_path: str, sample_path: str, log: Callable) -> N
             if episode_counter % 10 == 0:
                 log(f"Episode {episode_counter}, {sample_counter} samples collected")
             
-            
-
     return
 
 
@@ -125,11 +131,11 @@ if __name__ == "__main__":
     test_path_samp = f'{basedir_samp}/test/'
     os.makedirs(Path(test_path_samp), exist_ok=True)
 
-    #log('Generating training files')
-    #generate_instances(instance_path=train_path_inst, sample_path=train_path_samp, log=log)
+    log('Generating training files')
+    generate_instances(instance_path=train_path_inst, sample_path=train_path_samp, num_samples=50_000, log=log)
     log('Generating valid files')
-    generate_instances(instance_path=valid_path_inst, sample_path=valid_path_samp, log=log)
+    generate_instances(instance_path=valid_path_inst, sample_path=valid_path_samp, num_samples=10_000, log=log)
     log('Generating test files')
-    generate_instances(instance_path=test_path_inst, sample_path=test_path_samp, log=log)
+    generate_instances(instance_path=test_path_inst, sample_path=test_path_samp, num_samples=10_000, log=log)
 
     log('End of data generation.')

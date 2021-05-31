@@ -1,3 +1,11 @@
+"""
+Model training script.
+
+File adapted from https://github.com/ds4dm/ecole
+by Lars Sandberg @Sandbergo
+May 2021
+"""
+
 import numpy as np
 import torch
 import torch_geometric
@@ -8,7 +16,7 @@ from pathlib import Path
 from utilities.general import Logger
 from utilities.model import process
 from utilities.data import GraphDataset
-from models.mlp import MLP1Policy, MLP2Policy, MLP3Policy, MLP4Policy 
+from models.mlp import MLP1Policy, MLP2Policy, MLP3Policy
 from models.gnn import GNN1Policy, GNN2Policy, GNNSPolicy
 
 
@@ -17,7 +25,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '-m', '--model',
         help='Model name.',
-        choices=['gnn1', 'gnn2', 'gnns', 'mlp1', 'mlp2', 'mlp3', 'mlp4'],
+        choices=['gnn1', 'gnn2', 'gnns', 'mlp1', 'mlp2', 'mlp3'],
     )
     parser.add_argument(
         '-p', '--problem',
@@ -42,8 +50,8 @@ if __name__ == '__main__':
     NB_EPOCHS = 100
     PATIENCE = 8
     EARLY_STOPPING = 16
-    POLICY_DICT = {'mlp1': MLP1Policy(), 'mlp2': MLP2Policy(), 'mlp3': MLP3Policy(), 'mlp4': MLP4Policy(),
-                   'gnn1': GNN1Policy(), 'gnn2': GNN2Policy(), 'gnns': GNNSPolicy(),}
+    POLICY_DICT = {'mlp1': MLP1Policy(), 'mlp2': MLP2Policy(), 'mlp3': MLP3Policy(),
+                   'gnn1': GNN1Policy(), 'gnn2': GNN2Policy()}
     PROBLEM = args.problem
 
     if args.gpu == -1:
@@ -66,7 +74,6 @@ if __name__ == '__main__':
     log(f'Device:  {DEVICE}')
     log(f'Lr:      {LEARNING_RATE}')
     log(f'Epochs:  {NB_EPOCHS}')
-    #log(str(policy))
 
 
     # --- TRAIN --- #

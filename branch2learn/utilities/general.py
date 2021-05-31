@@ -1,3 +1,10 @@
+"""
+General utilities.
+
+by Lars Sandberg @Sandbergo
+May 2021
+"""
+
 import datetime
 import numpy as np
 

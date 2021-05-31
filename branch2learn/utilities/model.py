@@ -1,3 +1,11 @@
+"""
+Model utilities.
+
+File adapted from https://github.com/ds4dm/ecole
+by Lars Sandberg @Sandbergo
+May 2021
+"""
+
 import torch
 import torch.nn.functional as F
 import torch_geometric
