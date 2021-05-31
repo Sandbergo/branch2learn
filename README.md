@@ -10,7 +10,7 @@
 ---
 
 <p align="center">
-Learning the optimal branching variable in Mixed Integer Linear Programming Brach & Bound algorithms with graph convolutional neural networks and multi-layer perceptrons. The project uses _Ecole_ by DS4DM. 
+Learning the optimal branching variable in Mixed Integer Linear Programming Brach & Bound algorithms with graph convolutional neural networks and multi-layer perceptrons. The project uses Ecole by DS4DM. 
 </p>
 <br> 
 
@@ -69,6 +69,12 @@ python branch2learn/04_evaluate.py -p $PROBLEM -m $MODEL -g $DEVICE
 ### Evaluate default policies
 ```bash
 python branch2learn/05_evaluate_standard.py -p $PROBLEM -m fsb
+```
+
+Or, you can run all experiments with one bash script:
+### Run all experiments
+```bash
+./scripts/run.sh
 ```
 
 ## Citation
