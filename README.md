@@ -27,7 +27,7 @@ And implements variations of these ideas in the freamework _Ecole_, which is fou
 
 Antoine Prouvost, Justin Dumouchelle, L. Scavuzzo, Maxime Gasse, D. Chételat, A. Lodi: [Ecole: A Gym-like Library for Machine Learning in Combinatorial Optimization Solvers](https://www.semanticscholar.org/paper/Ecole%3A-A-Gym-like-Library-for-Machine-Learning-in-Prouvost-Dumouchelle/e5f3f6d89be2f29eda70133fd83913229650d008)
 
-This is the code for my project thesis for a Master of Science in Engineering Cybernetics at the Norwegian University of Science and Technology. The title of the project is "Multi-Layer Perceptrons for Branching in Mixed-Integer Linear Programming". Feel free to contact me about any and all details of this project. 
+This is the code for my master's thesis for a Master of Science in Engineering Cybernetics at the Norwegian University of Science and Technology. The title of the project is "Ablating a Graph Neural Network for Branching in Mixed-Integer Linear Programming". Feel free to contact me about any and all details of this project. 
 
 ## Installation
 
