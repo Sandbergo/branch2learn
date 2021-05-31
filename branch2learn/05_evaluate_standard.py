@@ -4,6 +4,7 @@ import torch_geometric
 import os
 import argparse
 import ecole
+import random
 from pathlib import Path
 
 from utilities.general import Logger
@@ -23,7 +24,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    POLICY_DICT = {'fsb': 'vanillafullstrong', 
+    POLICY_DICT = {'fsb': 'fullstrong',
                    'pc': 'pscost',
                    'rpc': 'relpscost'}
     TIME_LIMIT = 2700
@@ -45,49 +46,39 @@ if __name__ == "__main__":
     generators = {
         'cauctions': (
            [str(path) for path in Path(
-           f'branch2learn/data/instances/cauctions/test').glob('instance_*.lp')],
+           f'branch2learn/data/instances/cauctions/test/').glob('instance_*.lp')],
         ),
         'setcover': (
-            [str(path) for path in Path(
-           f'branch2learn/data/instances/setcover/test').glob('instance_*.lp')],
-        ),
+           [str(path) for path in Path(
+           f'branch2learn/data/instances/setcover/test/').glob('instance_*.lp')],
+        )
         }
-    """'facilitites': (
-            ecole.instance.CapacitatedFacilityLocationGenerator(n_customers=100, n_facilities=100),
-            ecole.instance.CapacitatedFacilityLocationGenerator(n_customers=100, n_facilities=200),
-            ecole.instance.CapacitatedFacilityLocationGenerator(n_customers=100, n_facilities=400),
-        ),
-        'indset': (
-            ecole.instance.IndependentSetGenerator(n_nodes=750, graph_type="barabasi_albert", affinity=4),
-            ecole.instance.IndependentSetGenerator(n_nodes=1000, graph_type="barabasi_albert", affinity=4),
-            ecole.instance.IndependentSetGenerator(n_nodes=1500, graph_type="barabasi_albert", affinity=4),
 
-        ),
-        'cauctions': (
-            ecole.instance.CombinatorialAuctionGenerator(n_items=100, n_bids=500),
-            ecole.instance.CombinatorialAuctionGenerator(n_items=100, n_bids=1000),
-            ecole.instance.CombinatorialAuctionGenerator(n_items=100, n_bids=1500)
-        ),"""
     sizes = ['small', 'medium', 'large']
     for problem_type in generators.keys():
         for i, instances in enumerate(generators[problem_type]):
             if i==0:
+                #break
                 num_samples=250
+            elif i==1:
+                num_samples=50
             else:
-                num_samples=0
-            node_list,time_list= [],[]
+                num_samples=20
             completed = 0
-            
+            node_list,time_list = [],[]
+
             log(f'------ {problem_type}, {sizes[i]} ------')
             for instance_count, instance in zip(range(num_samples), instances):
+        
                 _, _, _, _, _ = env.reset(instance)
                 _, _, _, done, info = env.step({})
-                
                 node_list.append(info['nb_nodes'])
                 time_list.append(info['time'])
                 if info['time'] < 0.99*TIME_LIMIT:
                     completed += done
-
-            log(f" nb nodes    {int(np.mean(node_list)): >4d} +- {int(np.std(node_list)): >4d} |  time {np.mean(time_list): >6.2f} | completed   {int(completed) : >2d} +- {np.std(time_list): >6.2f}")
+            log(f"  time {np.mean(time_list): >6.2f} \pm {np.std(time_list): >6.2f}  "
+                f"| nb nodes    {int(np.mean(node_list)): >4d} \pm {int(np.std(node_list)): >4d} "
+                f"| time/node  {1000*np.mean(time_list)/np.mean(node_list): >6.1f} ms "
+                f"| completed   {completed : >2d}")
 
     log('End of evaluation.')   

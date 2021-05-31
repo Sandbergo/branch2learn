@@ -45,7 +45,7 @@ def generate_instances(instance_path: str, sample_path: str, log: Callable) -> N
     scip_parameters = {'separating/maxrounds': 0, 'presolving/maxrestarts': 0, 'limits/time': 3600}
 
     env = ecole.environment.Branching(
-        observation_function=(ExploreThenStrongBranch(expert_probability=0.2),
+        observation_function=(ExploreThenStrongBranch(expert_probability=0.05),
                               ecole.observation.NodeBipartite()),
         scip_params=scip_parameters)
 
@@ -54,36 +54,42 @@ def generate_instances(instance_path: str, sample_path: str, log: Callable) -> N
     instance_files = [str(path) for path in Path(instance_path).glob('instance_*.lp')]
     log(f'Generating from {len(instance_files)} instances')
     
-    episode_counter, sample_counter = 0, 0
+    episode_counter, sample_counter = 0, 0  # TODO: temp
 
     # We will solve problems (run episodes) until we have saved enough samples
-    for _file in instance_files:
-        episode_counter += 1
-        observation, action_set, _, done, _ = env.reset(_file)
-        while not done:
-            (scores, scores_are_expert), node_observation = observation
+    while True:
+        for _file in instance_files:
+            episode_counter += 1
+            observation, action_set, _, done, _ = env.reset(_file)
+            while not done:
+                (scores, scores_are_expert), node_observation = observation
 
-            action = action_set[scores[action_set].argmax()]
+                action = action_set[scores[action_set].argmax()]
 
-            # Only save samples if they are coming from the expert (strong branching)
-            if scores_are_expert:
+                # Only save samples if they are coming from the expert (strong branching)
+                if scores_are_expert:
 
-                sample_counter += 1
+                    sample_counter += 1
+                    if sample_counter > 10_000:
+                        return
 
-                node_observation = (node_observation.row_features,
-                                (node_observation.edge_features.indices,
-                                node_observation.edge_features.values),
-                                node_observation.column_features)
+                    node_observation = (node_observation.row_features,
+                                    (node_observation.edge_features.indices,
+                                    node_observation.edge_features.values),
+                                    node_observation.column_features)
 
-                data = [node_observation, action, action_set, scores]
-                filename = f'{sample_path}/sample_{sample_counter}.pkl'
+                    data = [node_observation, action, action_set, scores]
+                    filename = f'{sample_path}/sample_{sample_counter}.pkl'
 
-                with gzip.open(filename, 'wb') as f:
-                    pickle.dump(data, f)
+                    with gzip.open(filename, 'wb') as f:
+                        pickle.dump(data, f)
 
-            observation, action_set, _, done, _ = env.step(action)
-        if episode_counter % 5 == 0:
-            log(f"Episode {episode_counter}, {sample_counter} samples collected")
+                observation, action_set, _, done, _ = env.step(action)
+                
+            if episode_counter % 10 == 0:
+                log(f"Episode {episode_counter}, {sample_counter} samples collected")
+            
+            
 
     return
 
@@ -103,6 +109,8 @@ if __name__ == "__main__":
     Path('branch2learn/log/').mkdir(exist_ok=True)
     log = Logger(filename='branch2learn/log/01_generate_data')
 
+    log(f'Problem: {PROBLEM_TYPE}')
+
     basedir_samp = f'branch2learn/data/samples/{PROBLEM_TYPE}/'
     basedir_inst = f'branch2learn/data/instances/{PROBLEM_TYPE}/'
 
@@ -118,7 +126,7 @@ if __name__ == "__main__":
     os.makedirs(Path(test_path_samp), exist_ok=True)
 
     #log('Generating training files')
-    #generate_instances(problem_type=PROBLEM_TYPE, num_samples=0, path=train_path, log=log)
+    #generate_instances(instance_path=train_path_inst, sample_path=train_path_samp, log=log)
     log('Generating valid files')
     generate_instances(instance_path=valid_path_inst, sample_path=valid_path_samp, log=log)
     log('Generating test files')

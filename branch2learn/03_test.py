@@ -10,7 +10,7 @@ from typing import List
 from utilities.general import Logger
 from utilities.model import pad_tensor
 from utilities.data import GraphDataset
-from models.mlp import MLP1Policy, MLP2Policy, MLP3Policy
+from models.mlp import MLP1Policy, MLP2Policy, MLP3Policy, MLP4Policy
 from models.gnn import GNN1Policy, GNN2Policy
 
 
@@ -74,7 +74,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '-m', '--model',
         help='Model name.',
-        choices=['gnn1', 'gnn2', 'mlp1', 'mlp2', 'mlp3'],
+        choices=['gnn1', 'gnn2', 'mlp1', 'mlp2', 'mlp3', 'mlp4'],
     )
     parser.add_argument(
         '-p', '--problem',
@@ -95,7 +95,7 @@ if __name__ == '__main__':
     )
     args = parser.parse_args()
 
-    POLICY_DICT = {'mlp1': MLP1Policy(), 'mlp2': MLP2Policy(), 'mlp3': MLP3Policy(),
+    POLICY_DICT = {'mlp1': MLP1Policy(), 'mlp2': MLP2Policy(), 'mlp3': MLP3Policy(),  'mlp4': MLP4Policy(),
                    'gnn1': GNN1Policy(), 'gnn2': GNN2Policy(), }
     PROBLEM = args.problem
 
@@ -134,7 +134,8 @@ if __name__ == '__main__':
 
     log('Beginning testing')
     test_kacc = process_kacc(policy=policy, data_loader=test_loader, device=DEVICE, top_k=range(1,11))
-
-    log(f'Test kacc: {round(test_kacc, 3}')
+    test_kacc_round = 100*np.round(test_kacc, 3)
+    log(f'Test kacc: {test_kacc_round} %')
+    log(f'{test_kacc_round[0]: >2.1f} \% & {test_kacc_round[4]: >2.1f} \% & {test_kacc_round[9]: >2.1f} \%')
 
     log('End of testing.')

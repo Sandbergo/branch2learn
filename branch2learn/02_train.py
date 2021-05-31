@@ -8,8 +8,8 @@ from pathlib import Path
 from utilities.general import Logger
 from utilities.model import process
 from utilities.data import GraphDataset
-from models.mlp import MLP1Policy, MLP2Policy, MLP3Policy
-from models.gnn import GNN1Policy, GNN2Policy
+from models.mlp import MLP1Policy, MLP2Policy, MLP3Policy, MLP4Policy 
+from models.gnn import GNN1Policy, GNN2Policy, GNNSPolicy
 
 
 if __name__ == '__main__':
@@ -17,7 +17,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '-m', '--model',
         help='Model name.',
-        choices=['gnn1', 'gnn2', 'mlp1', 'mlp2', 'mlp3'],
+        choices=['gnn1', 'gnn2', 'gnns', 'mlp1', 'mlp2', 'mlp3', 'mlp4'],
     )
     parser.add_argument(
         '-p', '--problem',
@@ -39,11 +39,11 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     LEARNING_RATE = 0.001
-    NB_EPOCHS = 60
-    PATIENCE = 10
-    EARLY_STOPPING = 20
-    POLICY_DICT = {'mlp1': MLP1Policy(), 'mlp2': MLP2Policy(), 'mlp3': MLP3Policy(),
-                   'gnn1': GNN1Policy(), 'gnn2': GNN2Policy(), }
+    NB_EPOCHS = 100
+    PATIENCE = 8
+    EARLY_STOPPING = 16
+    POLICY_DICT = {'mlp1': MLP1Policy(), 'mlp2': MLP2Policy(), 'mlp3': MLP3Policy(), 'mlp4': MLP4Policy(),
+                   'gnn1': GNN1Policy(), 'gnn2': GNN2Policy(), 'gnns': GNNSPolicy(),}
     PROBLEM = args.problem
 
     if args.gpu == -1:
@@ -80,7 +80,7 @@ if __name__ == '__main__':
     train_data = GraphDataset(train_files)
     train_loader = torch_geometric.data.DataLoader(train_data, batch_size=32, shuffle=True)
     valid_data = GraphDataset(valid_files)
-    valid_loader = torch_geometric.data.DataLoader(valid_data, batch_size=64, shuffle=False)
+    valid_loader = torch_geometric.data.DataLoader(valid_data, batch_size=32, shuffle=False)
 
     model_filename = f'branch2learn/models/{args.model}/{args.model}_{PROBLEM}.pkl'
     optimizer = torch.optim.Adam(policy.parameters(), lr=LEARNING_RATE)
@@ -90,6 +90,11 @@ if __name__ == '__main__':
     best_loss = np.inf
 
     log('Beginning training')
+     
+    train_loss, train_acc = process(
+        policy=policy, data_loader=train_loader, device=DEVICE, optimizer=None)
+    log(f'Train loss: {train_loss:0.3f}, accuracy {train_acc:0.3f}')
+
     valid_loss, valid_acc = process(
         policy=policy, data_loader=valid_loader, device=DEVICE, optimizer=None)
     log(f'Valid loss: {valid_loss:0.3f}, accuracy {valid_acc:0.3f}')
@@ -105,7 +110,7 @@ if __name__ == '__main__':
             policy=policy, data_loader=valid_loader, device=DEVICE, optimizer=None)
         log(f'Valid loss: {valid_loss:0.3f}, accuracy {valid_acc:0.3f}')
 
-        if valid_loss < best_loss:
+        if valid_loss < best_loss*0.999:
             plateau_count = 0
             best_loss = valid_loss
             torch.save(policy.state_dict(), model_filename)
