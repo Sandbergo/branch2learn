@@ -10,7 +10,7 @@
 ---
 
 <p align="center">
-Learning the optimal branching variable in Mixed Integer Linear Programming Brach & Bound algorithms with graph convolutional neural networks and multi-layer perceptrons. Source code for my master's thesis [Ablating a Graph convolutional Network for Branching in Mixed-Integer Linear Programming (2021)](https://github.com/Sandbergo/master-thesis/blob/main/sandberg_complete_thesis.pdf). The project uses [Ecole by DS4DM](https://github.com/ds4dm/ecole). 
+Learning the optimal branching variable in Mixed Integer Linear Programming Brach & Bound algorithms with graph convolutional neural networks and multi-layer perceptrons. Source code for my master's thesis [Ablating a Graph convolutional Network for Branching in Mixed-Integer Linear Programming](https://github.com/Sandbergo/master-thesis/blob/main/sandberg_complete_thesis.pdf). The project uses [Ecole by DS4DM](https://github.com/ds4dm/ecole). 
 </p>
 <br> 
 
