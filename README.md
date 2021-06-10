@@ -46,13 +46,11 @@ DEVICE=0
 
 ### Generate Dataset
 ```bash
-# generate instances
 python branch2learn/01_generate_data.py -p $PROBLEM
 ```
 
 ### Train model
 ```bash
-# generate dataset
 python branch2learn/02_train.py -p $PROBLEM -m $MODEL -g $DEVICE
 ```
 
