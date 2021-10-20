@@ -6,23 +6,23 @@ by Lars Sandberg @Sandbergo
 May 2021
 """
 
+import os
+import argparse
+import time
+from pathlib import Path
+
+import scipy.stats as st
+from tqdm import tqdm
 import numpy as np
 import torch
 import torch_geometric
-import os
 import ecole
-import argparse
-from pathlib import Path
-from tqdm import tqdm
-import time
-import scipy.stats as st
 
 from utilities.general import Logger
 from utilities.model import process
 from utilities.data import GraphDataset
 from models.mlp import MLP1Policy, MLP2Policy, MLP3Policy
 from models.gnn import GNN1Policy, GNN2Policy
-
 
 
 if __name__ == "__main__":
@@ -64,7 +64,6 @@ if __name__ == "__main__":
         DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     policy = POLICY_DICT[args.model].to(DEVICE)
-    
 
     rng = np.random.RandomState(args.seed)
     torch.manual_seed(rng.randint(np.iinfo(int).max))
@@ -76,7 +75,6 @@ if __name__ == "__main__":
     log(f'Problem: {PROBLEM}')
     log(f'Device:  {DEVICE}')
 
-
     scip_parameters = {'separating/maxrounds': 0, 'presolving/maxrestarts': 0, 'limits/time': TIME_LIMIT}
     env = ecole.environment.Branching(
         observation_function=ecole.observation.NodeBipartite(),
@@ -85,13 +83,14 @@ if __name__ == "__main__":
         scip_params=scip_parameters)
 
     problems = [str(path) for path in Path(
-           f'branch2learn/data/instances/{args.problem}/eval/').glob('instance_*.lp')]
+        f'branch2learn/data/instances/{args.problem}/eval/').glob('instance_*.lp')]
 
     model_filename = f'branch2learn/models/{args.model}/{args.model}_{args.problem}.pkl'
     policy.load_state_dict(torch.load(model_filename, map_location=torch.device(DEVICE)))
     policy.eval()
 
-    node_list,time_list = [],[]
+    node_list = []
+    time_list = []
     completed = 0
 
     for instance_count, instance in zip(range(num_samples), problems):
@@ -99,11 +98,12 @@ if __name__ == "__main__":
         while not done:
             
             with torch.no_grad():
-                observation = (torch.as_tensor(observation.row_features, dtype=torch.float32, device=DEVICE),
-                            torch.as_tensor(observation.edge_features.indices.astype(np.int64), dtype=torch.int64, device=DEVICE),
-                            torch.as_tensor(observation.edge_features.values, dtype=torch.float32, device=DEVICE).view(-1, 1),
-                            torch.as_tensor(observation.column_features, dtype=torch.float32, device=DEVICE))
-                
+                observation = (
+                    torch.as_tensor(observation.row_features, dtype=torch.float32, device=DEVICE),
+                    torch.as_tensor(observation.edge_features.indices.astype(np.int64), dtype=torch.int64, device=DEVICE),
+                    torch.as_tensor(observation.edge_features.values, dtype=torch.float32, device=DEVICE).view(-1, 1),
+                    torch.as_tensor(observation.column_features, dtype=torch.float32, device=DEVICE))
+
                 logits = policy(*observation)
                 action = action_set[logits[action_set.astype(np.int64)].argmax()]
                 observation, action_set, _, done, info = env.step(action)

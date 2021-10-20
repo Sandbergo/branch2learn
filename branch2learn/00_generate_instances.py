@@ -8,9 +8,10 @@ May 2021
 
 import os
 import argparse
+from itertools import combinations
+
 import numpy as np
 import scipy.sparse
-from itertools import combinations
 
 
 class Graph:
@@ -228,8 +229,8 @@ def generate_setcover(nrows, ncols, density, filename, rng, max_coef=100):
 
     # sparce CSC to sparse CSR matrix
     A = scipy.sparse.csc_matrix(
-            (np.ones(len(indices), dtype=int), indices, indptr),
-            shape=(nrows, ncols)).tocsr()
+        (np.ones(len(indices), dtype=int), indices, indptr),
+        shape=(nrows, ncols)).tocsr()
     indices = A.indices
     indptr = A.indptr
 
@@ -252,8 +253,8 @@ def generate_cauctions(random, filename, n_items=100, n_bids=500, min_value=1, m
                        additivity=0.2, budget_factor=1.5, resale_factor=0.5,
                        integers=False, warnings=False):
     """
-    Generate a Combinatorial Auction problem following the 'arbitrary' scheme found in section 4.3. of
-        Kevin Leyton-Brown, Mark Pearson, and Yoav Shoham. (2000).
+    Generate a Combinatorial Auction problem following the 'arbitrary' scheme found in 
+        section 4.3. of Kevin Leyton-Brown, Mark Pearson, and Yoav Shoham. (2000).
         Towards a universal test suite for combinatorial auction algorithms.
         Proceedings of ACM Conference on Electronic Commerce (EC-00) 66-76.
     Saves it as a CPLEX LP file.
@@ -278,7 +279,8 @@ def generate_cauctions(random, filename, n_items=100, n_bids=500, min_value=1, m
     max_n_sub_bids : int
         The maximum number of substitutable bids per bidder (+1 gives the maximum number of bids per bidder).
     additivity : float
-        Additivity parameter for bundle prices. Note that additivity < 0 gives sub-additive bids, while additivity > 0 gives super-additive bids.
+        Additivity parameter for bundle prices. Note that additivity < 0 gives sub-additive bids, 
+        while additivity > 0 gives super-additive bids.
     budget_factor : float
         The budget factor for each bidder, relative to their initial bid's price.
     resale_factor : float
@@ -375,7 +377,7 @@ def generate_cauctions(random, filename, n_items=100, n_bids=500, min_value=1, m
         budget = budget_factor * price
         min_resale_value = resale_factor * values[bundle].sum()
         for bundle, price in [
-            sub_candidates[i] for i in np.argsort([-price for bundle, price in sub_candidates])]:
+                sub_candidates[i] for i in np.argsort([-price for bundle, price in sub_candidates])]:
 
             if len(bidder_bids) >= max_n_sub_bids + 1 or len(bids) + len(bidder_bids) >= n_bids:
                 break
@@ -670,7 +672,7 @@ if __name__ == '__main__':
         os.makedirs(lp_dir)
         filenames.extend([os.path.join(lp_dir, f'instance_{i+1}.lp') for i in range(n)])
         nitemss.extend([number_of_items] * n)
-        nbidss.extend([number_of_bids ] * n)
+        nbidss.extend([number_of_bids] * n)
 
         # validation instances
         n = 500
@@ -679,7 +681,7 @@ if __name__ == '__main__':
         os.makedirs(lp_dir)
         filenames.extend([os.path.join(lp_dir, f'instance_{i+1}.lp') for i in range(n)])
         nitemss.extend([number_of_items] * n)
-        nbidss.extend([number_of_bids ] * n)
+        nbidss.extend([number_of_bids] * n)
         
         # eval instances
         n = 500
@@ -688,7 +690,7 @@ if __name__ == '__main__':
         os.makedirs(lp_dir)
         filenames.extend([os.path.join(lp_dir, f'instance_{i+1}.lp') for i in range(n)])
         nitemss.extend([number_of_items] * n)
-        nbidss.extend([number_of_bids ] * n)
+        nbidss.extend([number_of_bids] * n)
         
         # test instances
         n = 500
@@ -697,7 +699,7 @@ if __name__ == '__main__':
         os.makedirs(lp_dir)
         filenames.extend([os.path.join(lp_dir, f'instance_{i+1}.lp') for i in range(n)])
         nitemss.extend([number_of_items] * n)
-        nbidss.extend([number_of_bids ] * n)
+        nbidss.extend([number_of_bids] * n)
         
         # actually generate the instances
         for filename, nitems, nbids in zip(filenames, nitemss, nbidss):

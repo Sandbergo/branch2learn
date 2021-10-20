@@ -6,12 +6,13 @@ by Lars Sandberg @Sandbergo
 May 2021
 """
 
-import numpy as np
-import torch
-import torch_geometric
 import os
 import argparse
 from pathlib import Path
+
+import numpy as np
+import torch
+import torch_geometric
 
 from utilities.general import Logger
 from utilities.model import process
@@ -75,7 +76,6 @@ if __name__ == '__main__':
     log(f'Lr:      {LEARNING_RATE}')
     log(f'Epochs:  {NB_EPOCHS}')
 
-
     # --- TRAIN --- #
     train_files = [str(path) for path in Path(
         f'branch2learn/data/samples/{PROBLEM}/train'
@@ -97,7 +97,7 @@ if __name__ == '__main__':
     best_loss = np.inf
 
     log('Beginning training')
-     
+
     train_loss, train_acc = process(
         policy=policy, data_loader=train_loader, device=DEVICE, optimizer=None)
     log(f'Train loss: {train_loss:0.3f}, accuracy {train_acc:0.3f}')
@@ -121,7 +121,7 @@ if __name__ == '__main__':
             plateau_count = 0
             best_loss = valid_loss
             torch.save(policy.state_dict(), model_filename)
-            log(f'  best model so far')
+            log('  best model so far')
         else:
             plateau_count += 1
             if plateau_count % EARLY_STOPPING == 0:
@@ -139,5 +139,5 @@ if __name__ == '__main__':
 
     log(f'Saving model as {model_filename}')
     torch.save(policy.state_dict(), model_filename)
-    
+
     log('End of training.\n\n')

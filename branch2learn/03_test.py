@@ -8,12 +8,13 @@ May 2021
 
 import os
 import argparse
-import numpy as np
-import torch
-import torch_geometric
-import torch.nn.functional as F
 from pathlib import Path
 from typing import List
+
+import numpy as np
+import torch
+import torch.nn.functional as F
+import torch_geometric
 
 from utilities.general import Logger
 from utilities.model import pad_tensor
@@ -126,7 +127,6 @@ if __name__ == '__main__':
     log(f'Problem: {PROBLEM}')
     log(f'Device:  {DEVICE}')
 
-
     # --- TEST --- #
     test_files = [str(path) for path in Path(
         f'branch2learn/data/samples/{PROBLEM}/test'
@@ -140,9 +140,9 @@ if __name__ == '__main__':
     policy.eval()
 
     log('Beginning testing')
-    test_kacc = process_kacc(policy=policy, data_loader=test_loader, device=DEVICE, top_k=range(1,11))
+    test_kacc = process_kacc(policy=policy, data_loader=test_loader, device=DEVICE, top_k=range(1, 11))
     test_kacc_round = 100*np.round(test_kacc, 3)
     log(f'Test kacc: {test_kacc_round} %')
-    log(f'{test_kacc_round[0]: >2.1f} \% & {test_kacc_round[4]: >2.1f} \% & {test_kacc_round[9]: >2.1f} \%')
+    log(f'{test_kacc_round[0]: >2.1f} % & {test_kacc_round[4]: >2.1f} % & {test_kacc_round[9]: >2.1f} %')
 
     log('End of testing.')

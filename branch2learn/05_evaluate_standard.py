@@ -6,14 +6,11 @@ by Lars Sandberg @Sandbergo
 May 2021
 """
 
-import numpy as np
-import torch
-import torch_geometric
-import os
 import argparse
-import ecole
-import random
 from pathlib import Path
+
+import numpy as np
+import ecole
 
 from utilities.general import Logger
 
@@ -48,29 +45,29 @@ if __name__ == "__main__":
     log(f'Policy:   {args.brancher}')
     policy = POLICY_DICT[args.brancher]
 
-    scip_parameters = {'separating/maxrounds': 0, 'presolving/maxrestarts': 0, 'limits/time': TIME_LIMIT, 
-                       f'branching/{policy}/priority': 666666}
-    
+    scip_parameters = {'separating/maxrounds': 0, 'presolving/maxrestarts': 0, 
+                       'limits/time': TIME_LIMIT, f'branching/{policy}/priority': 666666}
+
     env = ecole.environment.Configuring(
         information_function={"nb_nodes": ecole.reward.NNodes().cumsum(),
                               "time": ecole.reward.SolvingTime().cumsum()},
         scip_params=scip_parameters)
 
     problems = [str(path) for path in Path(
-           f'branch2learn/data/instances/{args.problem}/eval/').glob('instance_*.lp')]
+        f'branch2learn/data/instances/{args.problem}/eval/').glob('instance_*.lp')]
 
+    node_list = []
+    time_list = []
     completed = 0
-    node_list,time_list = [],[]
 
     for instance_count, instance in zip(range(num_samples), instances):
-
         _, _, _, _, _ = env.reset(instance)
         _, _, _, done, info = env.step({})
         node_list.append(info['nb_nodes'])
         time_list.append(info['time'])
         if info['time'] < 0.99*TIME_LIMIT:
             completed += done
-    
+
     log(f"  time {np.mean(time_list): >6.2f} \pm {np.std(time_list): >6.2f}  "
         f"| nb nodes    {int(np.mean(node_list)): >4d} \pm {int(np.std(node_list)): >4d} "
         f"| time/node  {1000*np.mean(time_list)/np.mean(node_list): >6.1f} ms "

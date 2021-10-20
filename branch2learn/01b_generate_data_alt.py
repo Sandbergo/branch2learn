@@ -6,14 +6,15 @@ by Lars Sandberg @Sandbergo
 May 2021
 """
 
-import ecole
 import os
 import gzip
 import pickle
 import argparse
-import numpy as np
 from pathlib import Path
 from typing import Callable
+
+import ecole
+import numpy as np
 
 from utilities.general import Logger
 
@@ -58,11 +59,11 @@ def generate_instances(instance_path: str, sample_path: str, num_samples: int, l
         scip_params=scip_parameters)
 
     env.seed(0)
-    
+
     instance_files = [str(path) for path in Path(instance_path).glob('instance_*.lp')]
     log(f'Generating from {len(instance_files)} instances')
-    
-    episode_counter, sample_counter = 0, 0  # TODO: temp
+
+    episode_counter, sample_counter = 0, 0
 
     # We will solve problems (run episodes) until we have saved enough samples
     while True:
@@ -82,21 +83,21 @@ def generate_instances(instance_path: str, sample_path: str, num_samples: int, l
                         return
 
                     node_observation = (node_observation.row_features,
-                                    (node_observation.edge_features.indices,
-                                    node_observation.edge_features.values),
-                                    node_observation.column_features)
+                                        (node_observation.edge_features.indices,
+                                         node_observation.edge_features.values),
+                                        node_observation.column_features)
 
                     data = [node_observation, action, action_set, scores]
                     filename = f'{sample_path}/sample_{sample_counter}.pkl'
 
-                    with gzip.open(filename, 'wb') as f:
-                        pickle.dump(data, f)
+                    with gzip.open(filename, 'wb') as out_file:
+                        pickle.dump(data, out_file)
 
                 observation, action_set, _, done, _ = env.step(action)
-                
+
             if episode_counter % 10 == 0:
                 log(f"Episode {episode_counter}, {sample_counter} samples collected")
-            
+
     return
 
 
@@ -132,10 +133,13 @@ if __name__ == "__main__":
     os.makedirs(Path(test_path_samp), exist_ok=True)
 
     log('Generating training files')
-    generate_instances(instance_path=train_path_inst, sample_path=train_path_samp, num_samples=50_000, log=log)
+    generate_instances(
+        instance_path=train_path_inst, sample_path=train_path_samp, num_samples=50_000, log=log)
     log('Generating valid files')
-    generate_instances(instance_path=valid_path_inst, sample_path=valid_path_samp, num_samples=10_000, log=log)
+    generate_instances(
+        instance_path=valid_path_inst, sample_path=valid_path_samp, num_samples=10_000, log=log)
     log('Generating test files')
-    generate_instances(instance_path=test_path_inst, sample_path=test_path_samp, num_samples=10_000, log=log)
+    generate_instances(
+        instance_path=test_path_inst, sample_path=test_path_samp, num_samples=10_000, log=log)
 
     log('End of data generation.')

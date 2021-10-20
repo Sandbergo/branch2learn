@@ -8,9 +8,10 @@ May 2021
 
 import gzip
 import pickle
+
+import numpy as np
 import torch
 import torch_geometric
-import numpy as np
 
 
 class BipartiteNodeData(torch_geometric.data.Data):
@@ -64,8 +65,8 @@ class GraphDataset(torch_geometric.data.Dataset):
         This method loads a node bipartite graph observation as saved on the disk
         during data collection.
         """
-        with gzip.open(self.sample_files[index], 'rb') as f:
-            sample = pickle.load(f)
+        with gzip.open(self.sample_files[index], 'rb') as in_file:
+            sample = pickle.load(in_file)
 
         sample_observation, sample_action, sample_action_set, sample_scores = sample
 
