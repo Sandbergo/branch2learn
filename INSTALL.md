@@ -15,7 +15,7 @@ sudo apt install ./SCIPOptSuite-7.0.2-Linux-ubuntu.deb
 ## Conda
 ```
 https://docs.conda.io/en/latest/miniconda.html
-git clone ...
+git clone https://github.com/Sandbergo/branch2learn.git
 cd branch2learn
 conda env create -n ecole -f dev/conda.yaml
 ```
