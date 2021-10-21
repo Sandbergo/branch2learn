@@ -11,13 +11,12 @@ do
     python branch2learn/00_generate_instances.py -p $PROBLEM
     python branch2learn/01b_generate_data_alt.py -p $PROBLEM
 
-	for MODEL in "${models[@]}"
+    for MODEL in "${models[@]}"
     do
         python branch2learn/02_train.py    -p $PROBLEM -m $MODEL -g 0
         python branch2learn/03_test.py     -p $PROBLEM -m $MODEL -g 0
         python branch2learn/04_evaluate.py -p $PROBLEM -m $MODEL -g 0
         python branch2learn/04_evaluate.py -p $PROBLEM -m $MODEL -g -1
-        
     done
 
     for POLICY in "${policies[@]}"
