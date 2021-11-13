@@ -1,8 +1,8 @@
 #!/bin/bash
 
 problems=( setcover cauctions facilities indset )
-models=( mlp1 mlp2 mlp3 gnn1 gnn2)
-policies=( fsb pc rpc)
+models=( mlp1 mlp2 mlp3 gnn1 gnn2 )
+policies=( fsb pc rpc )
 
 printf "\n  ---RUNNING ALL EXPERIMENTS---  \n"
 

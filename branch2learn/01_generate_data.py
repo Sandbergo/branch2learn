@@ -71,7 +71,6 @@ def generate_instances(problem_type: str, num_samples: int, path: str, log: Call
             n_customers=100, n_facilities=100)
         }
 
-
     log(f'Generating {num_samples} {problem_type} instances')
     log(f'Saving samples in {path}')
     instances = generators[problem_type]
@@ -109,7 +108,7 @@ def generate_instances(problem_type: str, num_samples: int, path: str, log: Call
                     max_samples_reached = True
 
             observation, action_set, _, done, _ = env.step(action)
-
+ 
         if episode_counter % 5 == 0:
             log(f"Episode {episode_counter}, {sample_counter} / {num_samples} samples collected")
 

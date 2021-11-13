@@ -18,7 +18,7 @@ from utilities.general import Logger
 from utilities.model import process
 from utilities.data import GraphDataset
 from models.mlp import MLP1Policy, MLP2Policy, MLP3Policy
-from models.gnn import GNN1Policy, GNN2Policy, GNNSPolicy
+from models.gnn import GNN1Policy, GNN2Policy
 
 
 if __name__ == '__main__':
@@ -26,7 +26,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '-m', '--model',
         help='Model name.',
-        choices=['gnn1', 'gnn2', 'gnns', 'mlp1', 'mlp2', 'mlp3'],
+        choices=['gnn1', 'gnn2', 'mlp1', 'mlp2', 'mlp3'],
     )
     parser.add_argument(
         '-p', '--problem',
@@ -84,6 +84,8 @@ if __name__ == '__main__':
         f'branch2learn/data/samples/{PROBLEM}/valid'
         ).glob('sample_*.pkl')]
 
+    log(f'Training with {len(train_files)} samples, validating with {len(valid_files)} samples')
+
     train_data = GraphDataset(train_files)
     train_loader = torch_geometric.data.DataLoader(train_data, batch_size=32, shuffle=True)
     valid_data = GraphDataset(valid_files)
@@ -132,6 +134,7 @@ if __name__ == '__main__':
                 log(f'  {plateau_count} epochs without improvement, decrease lr to {LEARNING_RATE}')
 
         scheduler.step(valid_loss)
+    
     policy.load_state_dict(torch.load(model_filename))
     valid_loss, valid_acc = process(
         policy=policy, data_loader=valid_loader, device=DEVICE, optimizer=None)
