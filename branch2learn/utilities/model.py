@@ -16,8 +16,9 @@ class BipartiteGraphConvolution(torch_geometric.nn.MessagePassing):
     The bipartite graph convolution is already provided by pytorch geometric and we merely need
     to provide the exact form of the messages being passed.
     """
+
     def __init__(self):
-        super().__init__('add')
+        super().__init__("add")
         emb_size = 64
 
         self.feature_module_left = torch.nn.Sequential(
@@ -32,14 +33,12 @@ class BipartiteGraphConvolution(torch_geometric.nn.MessagePassing):
         self.feature_module_final = torch.nn.Sequential(
             torch.nn.LayerNorm(emb_size),
             torch.nn.ReLU(),
-            torch.nn.Linear(emb_size, emb_size)
+            torch.nn.Linear(emb_size, emb_size),
         )
-        self.post_conv_module = torch.nn.Sequential(
-            torch.nn.LayerNorm(emb_size)
-        )
+        self.post_conv_module = torch.nn.Sequential(torch.nn.LayerNorm(emb_size))
         # output_layers
         self.output_module = torch.nn.Sequential(
-            torch.nn.Linear(2*emb_size, emb_size),
+            torch.nn.Linear(2 * emb_size, emb_size),
             torch.nn.ReLU(),
             torch.nn.Linear(emb_size, emb_size),
         )
@@ -49,17 +48,22 @@ class BipartiteGraphConvolution(torch_geometric.nn.MessagePassing):
         This method sends the messages, computed in the message method.
         """
         output = self.propagate(
-            edge_indices, size=(left_features.shape[0], right_features.shape[0]),
-            node_features=(left_features, right_features), edge_features=edge_features)
+            edge_indices,
+            size=(left_features.shape[0], right_features.shape[0]),
+            node_features=(left_features, right_features),
+            edge_features=edge_features,
+        )
 
         return self.output_module(
-            torch.cat([self.post_conv_module(output), right_features], dim=-1))
+            torch.cat([self.post_conv_module(output), right_features], dim=-1)
+        )
 
     def message(self, node_features_i, node_features_j, edge_features):
         output = self.feature_module_final(
             self.feature_module_left(node_features_i)
             + self.feature_module_edge(edge_features)
-            + self.feature_module_right(node_features_j))
+            + self.feature_module_right(node_features_j)
+        )
         return output
 
 
@@ -77,10 +81,12 @@ def process(policy, data_loader, device: str, optimizer=None):
             batch = batch.to(device)
             # Compute the logits (i.e. pre-softmax activations)
             # according to the policy on the concatenated graphs
-            logits = policy(batch.constraint_features,
-                            batch.edge_index,
-                            batch.edge_attr,
-                            batch.variable_features)
+            logits = policy(
+                batch.constraint_features,
+                batch.edge_index,
+                batch.edge_attr,
+                batch.variable_features,
+            )
             # Index the results by the candidates, and split and pad them
 
             logits = pad_tensor(logits[batch.candidates], batch.nb_candidates)
@@ -96,8 +102,12 @@ def process(policy, data_loader, device: str, optimizer=None):
             true_bestscore = true_scores.max(dim=-1, keepdims=True).values
 
             predicted_bestindex = logits.max(dim=-1, keepdims=True).indices
-            accuracy = (true_scores.gather(-1, predicted_bestindex) == true_bestscore
-                       ).float().mean().item()
+            accuracy = (
+                (true_scores.gather(-1, predicted_bestindex) == true_bestscore)
+                .float()
+                .mean()
+                .item()
+            )
 
             mean_loss += loss.item() * batch.num_graphs
             mean_acc += accuracy * batch.num_graphs
@@ -115,6 +125,11 @@ def pad_tensor(input_, pad_sizes, pad_value=-1e8):
     """
     max_pad_size = pad_sizes.max()
     output = input_.split(pad_sizes.cpu().numpy().tolist())
-    output = torch.stack([F.pad(slice_, (0, max_pad_size-slice_.size(0)), 'constant', pad_value)
-                          for slice_ in output], dim=0)
+    output = torch.stack(
+        [
+            F.pad(slice_, (0, max_pad_size - slice_.size(0)), "constant", pad_value)
+            for slice_ in output
+        ],
+        dim=0,
+    )
     return output

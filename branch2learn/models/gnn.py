@@ -45,7 +45,9 @@ class GNN1Policy(torch.nn.Module):
             torch.nn.Linear(emb_size, 1, bias=True),
         )
 
-    def forward(self, constraint_features, edge_indices, edge_features, variable_features):
+    def forward(
+        self, constraint_features, edge_indices, edge_features, variable_features
+    ):
         reversed_edge_indices = torch.stack([edge_indices[1], edge_indices[0]], dim=0)
 
         # First step: linear embedding layers to a common dimension (64)
@@ -55,9 +57,11 @@ class GNN1Policy(torch.nn.Module):
 
         # Two half convolutions
         constraint_features = self.conv_v_to_c(
-            variable_features, reversed_edge_indices, edge_features, constraint_features)
+            variable_features, reversed_edge_indices, edge_features, constraint_features
+        )
         variable_features = self.conv_c_to_v(
-            constraint_features, edge_indices, edge_features, variable_features)
+            constraint_features, edge_indices, edge_features, variable_features
+        )
 
         # A final MLP on the variable features
         output = self.output_module(variable_features).squeeze(-1)
@@ -104,7 +108,9 @@ class GNN2Policy(torch.nn.Module):
             torch.nn.Linear(emb_size, 1, bias=False),
         )
 
-    def forward(self, constraint_features, edge_indices, edge_features, variable_features):
+    def forward(
+        self, constraint_features, edge_indices, edge_features, variable_features
+    ):
         reversed_edge_indices = torch.stack([edge_indices[1], edge_indices[0]], dim=0)
 
         # First step: linear embedding layers to a common dimension (64)
@@ -114,9 +120,11 @@ class GNN2Policy(torch.nn.Module):
 
         # Two half convolutions
         constraint_features = self.conv_v_to_c(
-            variable_features, reversed_edge_indices, edge_features, constraint_features)
+            variable_features, reversed_edge_indices, edge_features, constraint_features
+        )
         variable_features = self.conv_c_to_v(
-            constraint_features, edge_indices, edge_features, variable_features)
+            constraint_features, edge_indices, edge_features, variable_features
+        )
 
         # A final MLP on the variable features
         output = self.output_module(variable_features).squeeze(-1)
