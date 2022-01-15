@@ -590,7 +590,7 @@ def generate_capacited_facility_location(
         file.write("".join([f" y_{j+1}" for j in range(n_facilities)]))
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-p",
@@ -856,3 +856,7 @@ if __name__ == "__main__":
             )
 
         print("done.")
+
+
+if __name__ == "__main__":
+    main()

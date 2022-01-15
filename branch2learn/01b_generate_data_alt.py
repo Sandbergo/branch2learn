@@ -115,7 +115,7 @@ def generate_instances(
     return
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-p",
@@ -170,3 +170,7 @@ if __name__ == "__main__":
     )
 
     log("End of data generation.")
+
+
+if __name__ == "__main__":
+    main()

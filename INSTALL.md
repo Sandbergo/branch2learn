@@ -5,7 +5,7 @@ SCIP Optimization suite 7.0.2 (free for academic uses)
 
 ```
 sudo apt-get install gfortran liblapack3 libtbb2 libcliquer1 libopenblas-dev libgsl23 -y
-https://www.scipopt.org/download.php?fname=SCIPOptSuite-7.0.2-Linux-ubuntu.deb
+curl -o SCIPOptSuite-7.0.2-Linux-ubuntu.deb https://www.scipopt.org/download.php?fname=SCIPOptSuite-7.0.2-Linux-ubuntu.deb
 sudo apt install ./SCIPOptSuite-7.0.2-Linux-ubuntu.deb
 ```
 
@@ -14,7 +14,7 @@ sudo apt install ./SCIPOptSuite-7.0.2-Linux-ubuntu.deb
 
 ## Conda
 ```
-https://docs.conda.io/en/latest/miniconda.html
+# install conda as described here: https://docs.conda.io/en/latest/miniconda.html
 git clone https://github.com/Sandbergo/branch2learn.git
 cd branch2learn
 conda env create -n ecole -f dev/conda.yaml
@@ -22,6 +22,7 @@ conda env create -n ecole -f dev/conda.yaml
 
 
 ## Ecole
+Can be installed with conda, but I had problems with incompatible binaries. Here is a source installation guide:
 ```
 git clone https://github.com/ds4dm/ecole
 cd ecole

@@ -25,7 +25,7 @@ from models.mlp import MLP1Policy, MLP2Policy, MLP3Policy
 from models.gnn import GNN1Policy, GNN2Policy
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-m",
@@ -158,3 +158,7 @@ if __name__ == "__main__":
     )
 
     log("End of evaluation.")
+
+
+if __name__ == "__main__":
+    main()

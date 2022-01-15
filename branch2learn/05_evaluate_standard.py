@@ -14,7 +14,8 @@ import ecole
 
 from utilities.general import Logger
 
-if __name__ == "__main__":
+
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-b",
@@ -88,3 +89,7 @@ if __name__ == "__main__":
     )
 
     log("End of evaluation.")
+
+
+if __name__ == "__main__":
+    main()
