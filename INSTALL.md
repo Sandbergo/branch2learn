@@ -1,5 +1,7 @@
+# Installation Guide
+Following is the installation process I used for my Ubuntu20.04-system, adaptions are likely to be needed on your particular system.
 
-# SCIP solver
+## SCIP solver
 
 SCIP Optimization suite 7.0.2 (free for academic uses)
 
@@ -10,9 +12,9 @@ sudo apt install ./SCIPOptSuite-7.0.2-Linux-ubuntu.deb
 ```
 
 
-# Python dependencies
+## Python dependencies
 
-## Conda
+### Conda
 ```
 # install conda as described here: https://docs.conda.io/en/latest/miniconda.html
 git clone https://github.com/Sandbergo/branch2learn.git
@@ -21,8 +23,8 @@ conda env create -n ecole -f dev/conda.yaml
 ```
 
 
-## Ecole
-Can be installed with conda, but I had problems with incompatible binaries. Here is a source installation guide:
+### Ecole
+Ecole can be installed with conda, but I had problems with incompatible binaries. Here is a source installation guide that I used:
 ```
 git clone https://github.com/ds4dm/ecole
 cd ecole
@@ -32,13 +34,13 @@ python -m pip install build/python
 cd ..
 ```
 
-## Cuda
+### Cuda
 
 ```
 conda install -c anaconda cudatoolkit
 ```
 
-## Extra Dependencies
+### Extra Dependencies
 
 ```
 conda install pytorch cudatoolkit=11.1 -c pytorch -c conda-forge
