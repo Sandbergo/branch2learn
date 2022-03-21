@@ -32,7 +32,7 @@ This is the code for my master's thesis for a Master of Science in Engineering C
 ## Installation
 
 
-Installation instructions are given in [INSTALL.md](install.md)
+Installation instructions are given in [INSTALL.md](INSTALL.md)
 
 ## How to run it?
 To recreate results, choose a problem, model and device. Following is an example of how to do this.
