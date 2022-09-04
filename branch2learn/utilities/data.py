@@ -41,10 +41,10 @@ class BipartiteNodeData(torch_geometric.data.Data):
         self.candidate_choices = candidate_choice
         self.candidate_scores = candidate_scores
 
-    def __inc__(self, key, value):
+    def __inc__(self, key, value, store, *args, **kwargs):
         """
-        We overload the pytorch geometric method that tells how to increment indices
-        when concatenating graphs for those entries (edge index, candidates)
+        We overload the pytorch geometric method that tells how to increment indices 
+        when concatenating graphs for those entries (edge index, candidates) 
         for which this is not obvious.
         """
         if key == "edge_index":
@@ -54,7 +54,7 @@ class BipartiteNodeData(torch_geometric.data.Data):
         elif key == "candidates":
             return self.variable_features.size(0)
         else:
-            return super().__inc__(key, value)
+            return super().__inc__(key, value, *args, **kwargs)
 
 
 class GraphDataset(torch_geometric.data.Dataset):
