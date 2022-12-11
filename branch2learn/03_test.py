@@ -168,7 +168,8 @@ if __name__ == "__main__":
     test_kacc_round = 100 * np.round(test_kacc, 3)
     log(f"Test kacc: {test_kacc_round} %")
     log(
-        f"{test_kacc_round[0]: >2.1f} % & {test_kacc_round[4]: >2.1f} % & {test_kacc_round[9]: >2.1f} %"
+        f"{test_kacc_round[0]: >2.1f} % & {test_kacc_round[4]: >2.1f} %"
+        f" & {test_kacc_round[9]: >2.1f} %"
     )
 
     log("End of testing.")

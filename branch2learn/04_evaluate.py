@@ -8,19 +8,13 @@ May 2021
 
 import os
 import argparse
-import time
 from pathlib import Path
 
-import scipy.stats as st
-from tqdm import tqdm
 import numpy as np
 import torch
-import torch_geometric
 import ecole
 
 from utilities.general import Logger
-from utilities.model import process
-from utilities.data import GraphDataset
 from models.mlp import MLP1Policy, MLP2Policy, MLP3Policy
 from models.gnn import GNN1Policy, GNN2Policy
 

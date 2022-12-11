@@ -312,7 +312,8 @@ def generate_cauctions(
     add_item_prob : float in [0, 1]
         The probability of adding a new item to an existing bundle.
     max_n_sub_bids : int
-        The maximum number of substitutable bids per bidder (+1 gives the maximum number of bids per bidder).
+        The maximum number of substitutable bids per bidder 
+        (+1 gives the maximum number of bids per bidder).
     additivity : float
         Additivity parameter for bundle prices. Note that additivity < 0 gives sub-additive bids,
         while additivity > 0 gives super-additive bids.
