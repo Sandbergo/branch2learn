@@ -66,7 +66,7 @@ python branch2learn/04_evaluate.py -p $PROBLEM -m $MODEL -g $DEVICE
 
 ### Evaluate default policies
 ```bash
-python branch2learn/05_evaluate_standard.py -p $PROBLEM -m fsb
+python branch2learn/05_evaluate_standard.py -p $PROBLEM -b fsb
 ```
 
 Or, you can run all experiments with one bash script:
