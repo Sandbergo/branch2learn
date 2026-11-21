@@ -31,7 +31,7 @@ def main():
         "-m",
         "--model",
         help="Model name.",
-        choices=["gnn1", "gnn2", "mlp1", "mlp2", "mlp3", "mlp4"],
+        choices=["gnn1", "gnn2", "mlp1", "mlp2", "mlp3"],
     )
     parser.add_argument(
         "-p",
