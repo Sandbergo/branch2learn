@@ -25,7 +25,7 @@ def main():
         "-m",
         "--model",
         help="Model name.",
-        choices=["gnn1", "gnn2", "mlp1", "mlp2", "mlp3", "mlp4"],
+        choices=["gnn1", "gnn2", "mlp1", "mlp2", "mlp3"],
     )
     parser.add_argument(
         "-p",
@@ -46,6 +46,13 @@ def main():
         help="Random generator seed.",
         type=int,
         default=0,
+    )
+    parser.add_argument(
+        "-n",
+        "--num-instances",
+        help="Number of eval instances to solve (default: all).",
+        type=int,
+        default=None,
     )
     args = parser.parse_args()
 
@@ -92,12 +99,16 @@ def main():
         scip_params=scip_parameters,
     )
 
-    problems = [
+    problems = sorted(
         str(path)
         for path in Path(f"branch2learn/data/instances/{args.problem}/eval/").glob(
             "instance_*.lp"
         )
-    ]
+    )[: args.num_instances]
+    if not problems:
+        raise FileNotFoundError(
+            f"No eval instances in branch2learn/data/instances/{args.problem}/eval/"
+        )
 
     model_filename = f"branch2learn/models/{args.model}/{args.model}_{args.problem}.pkl"
     policy.load_state_dict(
@@ -109,7 +120,7 @@ def main():
     time_list = []
     completed = 0
 
-    for instance_count, instance in zip(range(num_samples), problems):
+    for instance in problems:
         observation, action_set, _, done, info = env.reset(instance)
         while not done:
 
@@ -145,8 +156,8 @@ def main():
     mean_time = np.mean(time_list)
     mean_node = np.mean(node_list)
     log(
-        f"  time {mean_time: >6.2f} \pm {np.std(time_list): >6.2f}  "
-        f"| nb nodes    {int(mean_node): >4d} \pm {int(np.std(node_list)): >4d} "
+        f"  time {mean_time: >6.2f} \\pm {np.std(time_list): >6.2f}  "
+        f"| nb nodes    {int(mean_node): >4d} \\pm {int(np.std(node_list)): >4d} "
         f"| time/node  {1000*mean_time/mean_node: >6.1f} ms"
         f"| completed   {completed : >2d}"
     )

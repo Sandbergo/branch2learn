@@ -36,6 +36,13 @@ def main():
         type=int,
         default=0,
     )
+    parser.add_argument(
+        "-n",
+        "--num-instances",
+        help="Number of eval instances to solve (default: all).",
+        type=int,
+        default=None,
+    )
     args = parser.parse_args()
 
     POLICY_DICT = {"fsb": "fullstrong", "pc": "pscost", "rpc": "relpscost"}
@@ -62,18 +69,22 @@ def main():
         scip_params=scip_parameters,
     )
 
-    problems = [
+    problems = sorted(
         str(path)
         for path in Path(f"branch2learn/data/instances/{args.problem}/eval/").glob(
             "instance_*.lp"
         )
-    ]
+    )[: args.num_instances]
+    if not problems:
+        raise FileNotFoundError(
+            f"No eval instances in branch2learn/data/instances/{args.problem}/eval/"
+        )
 
     node_list = []
     time_list = []
     completed = 0
 
-    for instance_count, instance in zip(range(num_samples), instances):
+    for instance in problems:
         _, _, _, _, _ = env.reset(instance)
         _, _, _, done, info = env.step({})
         node_list.append(info["nb_nodes"])
@@ -82,8 +93,8 @@ def main():
             completed += done
 
     log(
-        f"  time {np.mean(time_list): >6.2f} \pm {np.std(time_list): >6.2f}  "
-        f"| nb nodes    {int(np.mean(node_list)): >4d} \pm {int(np.std(node_list)): >4d} "
+        f"  time {np.mean(time_list): >6.2f} \\pm {np.std(time_list): >6.2f}  "
+        f"| nb nodes    {int(np.mean(node_list)): >4d} \\pm {int(np.std(node_list)): >4d} "
         f"| time/node  {1000*np.mean(time_list)/np.mean(node_list): >6.1f} ms "
         f"| completed   {completed : >2d}"
     )

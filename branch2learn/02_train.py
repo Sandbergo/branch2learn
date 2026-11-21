@@ -113,12 +113,14 @@ if __name__ == "__main__":
     )
 
     model_filename = f"branch2learn/models/{args.model}/{args.model}_{PROBLEM}.pkl"
+    Path(model_filename).parent.mkdir(parents=True, exist_ok=True)
     optimizer = torch.optim.Adam(policy.parameters(), lr=LEARNING_RATE)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
         optimizer, mode="min", factor=0.2, patience=PATIENCE, verbose=True
     )
 
     best_loss = np.inf
+    plateau_count = 0
 
     log("Beginning training")
 

@@ -626,7 +626,7 @@ def main():
         n = 2000
         lp_dir = f"{BASEDIR}/setcover/train"
         print(f"{n} instances in {lp_dir}")
-        os.makedirs(lp_dir)
+        os.makedirs(lp_dir, exist_ok=True)
         filenames.extend([os.path.join(lp_dir, f"instance_{i+1}.lp") for i in range(n)])
         nrowss.extend([nrows] * n)
         ncolss.extend([ncols] * n)
@@ -636,7 +636,7 @@ def main():
         n = 500
         lp_dir = f"{BASEDIR}/setcover/valid"
         print(f"{n} instances in {lp_dir}")
-        os.makedirs(lp_dir)
+        os.makedirs(lp_dir, exist_ok=True)
         filenames.extend([os.path.join(lp_dir, f"instance_{i+1}.lp") for i in range(n)])
         nrowss.extend([nrows] * n)
         ncolss.extend([ncols] * n)
@@ -647,7 +647,7 @@ def main():
         nrows = 500
         lp_dir = f"{BASEDIR}/setcover/test/small"
         print(f"{n} instances in {lp_dir}")
-        os.makedirs(lp_dir)
+        os.makedirs(lp_dir, exist_ok=True)
         filenames.extend([os.path.join(lp_dir, f"instance_{i+1}.lp") for i in range(n)])
         nrowss.extend([nrows] * n)
         ncolss.extend([ncols] * n)
@@ -658,7 +658,7 @@ def main():
         nrows = 1000
         lp_dir = f"{BASEDIR}/setcover/test/medium"
         print(f"{n} instances in {lp_dir}")
-        os.makedirs(lp_dir)
+        os.makedirs(lp_dir, exist_ok=True)
         filenames.extend([os.path.join(lp_dir, f"instance_{i+1}.lp") for i in range(n)])
         nrowss.extend([nrows] * n)
         ncolss.extend([ncols] * n)
@@ -669,7 +669,7 @@ def main():
         nrows = 2000
         lp_dir = f"{BASEDIR}/setcover/test/large"
         print(f"{n} instances in {lp_dir}")
-        os.makedirs(lp_dir)
+        os.makedirs(lp_dir, exist_ok=True)
         filenames.extend([os.path.join(lp_dir, f"instance_{i+1}.lp") for i in range(n)])
         nrowss.extend([nrows] * n)
         ncolss.extend([ncols] * n)
@@ -681,7 +681,17 @@ def main():
         ncols = 1000
         lp_dir = f"{BASEDIR}/setcover/test"
         print(f"{n} instances in {lp_dir}")
-        # os.makedirs(lp_dir)
+        os.makedirs(lp_dir, exist_ok=True)
+        filenames.extend([os.path.join(lp_dir, f"instance_{i+1}.lp") for i in range(n)])
+        nrowss.extend([nrows] * n)
+        ncolss.extend([ncols] * n)
+        denss.extend([dens] * n)
+
+        # eval instances (appended last so earlier splits keep the same RNG stream)
+        n = 500
+        lp_dir = f"{BASEDIR}/setcover/eval"
+        print(f"{n} instances in {lp_dir}")
+        os.makedirs(lp_dir, exist_ok=True)
         filenames.extend([os.path.join(lp_dir, f"instance_{i+1}.lp") for i in range(n)])
         nrowss.extend([nrows] * n)
         ncolss.extend([ncols] * n)
@@ -712,7 +722,7 @@ def main():
         n = 2000
         lp_dir = f"{BASEDIR}/indset/train"
         print(f"{n} instances in {lp_dir}")
-        os.makedirs(lp_dir)
+        os.makedirs(lp_dir, exist_ok=True)
         filenames.extend([os.path.join(lp_dir, f"instance_{i+1}.lp") for i in range(n)])
         nnodess.extend([number_of_nodes] * n)
 
@@ -720,7 +730,7 @@ def main():
         n = 500
         lp_dir = f"{BASEDIR}/indset/valid"
         print(f"{n} instances in {lp_dir}")
-        os.makedirs(lp_dir)
+        os.makedirs(lp_dir, exist_ok=True)
         filenames.extend([os.path.join(lp_dir, f"instance_{i+1}.lp") for i in range(n)])
         nnodess.extend([number_of_nodes] * n)
 
@@ -728,7 +738,7 @@ def main():
         n = 500
         lp_dir = f"{BASEDIR}/indset/eval"
         print(f"{n} instances in {lp_dir}")
-        os.makedirs(lp_dir)
+        os.makedirs(lp_dir, exist_ok=True)
         filenames.extend([os.path.join(lp_dir, f"instance_{i+1}.lp") for i in range(n)])
         nnodess.extend([number_of_nodes] * n)
 
@@ -736,7 +746,7 @@ def main():
         n = 500
         lp_dir = f"{BASEDIR}/indset/test"
         print(f"{n} instances in {lp_dir}")
-        os.makedirs(lp_dir)
+        os.makedirs(lp_dir, exist_ok=True)
         filenames.extend([os.path.join(lp_dir, f"instance_{i+1}.lp") for i in range(n)])
         nnodess.extend([number_of_nodes] * n)
 
@@ -759,7 +769,7 @@ def main():
         n = 2000
         lp_dir = f"{BASEDIR}/cauctions/train"
         print(f"{n} instances in {lp_dir}")
-        os.makedirs(lp_dir)
+        os.makedirs(lp_dir, exist_ok=True)
         filenames.extend([os.path.join(lp_dir, f"instance_{i+1}.lp") for i in range(n)])
         nitemss.extend([number_of_items] * n)
         nbidss.extend([number_of_bids] * n)
@@ -768,7 +778,7 @@ def main():
         n = 500
         lp_dir = f"{BASEDIR}/cauctions/valid"
         print(f"{n} instances in {lp_dir}")
-        os.makedirs(lp_dir)
+        os.makedirs(lp_dir, exist_ok=True)
         filenames.extend([os.path.join(lp_dir, f"instance_{i+1}.lp") for i in range(n)])
         nitemss.extend([number_of_items] * n)
         nbidss.extend([number_of_bids] * n)
@@ -777,7 +787,7 @@ def main():
         n = 500
         lp_dir = f"{BASEDIR}/cauctions/eval"
         print(f"{n} instances in {lp_dir}")
-        os.makedirs(lp_dir)
+        os.makedirs(lp_dir, exist_ok=True)
         filenames.extend([os.path.join(lp_dir, f"instance_{i+1}.lp") for i in range(n)])
         nitemss.extend([number_of_items] * n)
         nbidss.extend([number_of_bids] * n)
@@ -786,7 +796,7 @@ def main():
         n = 500
         lp_dir = f"{BASEDIR}/cauctions/test"
         print(f"{n} instances in {lp_dir}")
-        os.makedirs(lp_dir)
+        os.makedirs(lp_dir, exist_ok=True)
         filenames.extend([os.path.join(lp_dir, f"instance_{i+1}.lp") for i in range(n)])
         nitemss.extend([number_of_items] * n)
         nbidss.extend([number_of_bids] * n)
@@ -813,7 +823,7 @@ def main():
         n = 2000
         lp_dir = f"{BASEDIR}/facilities/train"
         print(f"{n} instances in {lp_dir}")
-        os.makedirs(lp_dir)
+        os.makedirs(lp_dir, exist_ok=True)
         filenames.extend([os.path.join(lp_dir, f"instance_{i+1}.lp") for i in range(n)])
         ncustomerss.extend([number_of_customers] * n)
         nfacilitiess.extend([number_of_facilities] * n)
@@ -823,7 +833,7 @@ def main():
         n = 500
         lp_dir = f"{BASEDIR}/facilities/valid"
         print(f"{n} instances in {lp_dir}")
-        os.makedirs(lp_dir)
+        os.makedirs(lp_dir, exist_ok=True)
         filenames.extend([os.path.join(lp_dir, f"instance_{i+1}.lp") for i in range(n)])
         ncustomerss.extend([number_of_customers] * n)
         nfacilitiess.extend([number_of_facilities] * n)
@@ -833,7 +843,7 @@ def main():
         n = 500
         lp_dir = f"{BASEDIR}/facilities/eval"
         print(f"{n} instances in {lp_dir}")
-        os.makedirs(lp_dir)
+        os.makedirs(lp_dir, exist_ok=True)
         filenames.extend([os.path.join(lp_dir, f"instance_{i+1}.lp") for i in range(n)])
         ncustomerss.extend([number_of_customers] * n)
         nfacilitiess.extend([number_of_facilities] * n)
@@ -843,7 +853,7 @@ def main():
         n = 500
         lp_dir = f"{BASEDIR}/facilities/test"
         print(f"{n} instances in {lp_dir}")
-        os.makedirs(lp_dir)
+        os.makedirs(lp_dir, exist_ok=True)
         filenames.extend([os.path.join(lp_dir, f"instance_{i+1}.lp") for i in range(n)])
         ncustomerss.extend([number_of_customers] * n)
         nfacilitiess.extend([number_of_facilities] * n)
