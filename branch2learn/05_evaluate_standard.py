@@ -36,6 +36,13 @@ def main():
         type=int,
         default=0,
     )
+    parser.add_argument(
+        "-n",
+        "--num-instances",
+        help="Number of eval instances to solve (default: all).",
+        type=int,
+        default=None,
+    )
     args = parser.parse_args()
 
     POLICY_DICT = {"fsb": "fullstrong", "pc": "pscost", "rpc": "relpscost"}
@@ -62,18 +69,22 @@ def main():
         scip_params=scip_parameters,
     )
 
-    problems = [
+    problems = sorted(
         str(path)
         for path in Path(f"branch2learn/data/instances/{args.problem}/eval/").glob(
             "instance_*.lp"
         )
-    ]
+    )[: args.num_instances]
+    if not problems:
+        raise FileNotFoundError(
+            f"No eval instances in branch2learn/data/instances/{args.problem}/eval/"
+        )
 
     node_list = []
     time_list = []
     completed = 0
 
-    for instance_count, instance in zip(range(num_samples), instances):
+    for instance in problems:
         _, _, _, _, _ = env.reset(instance)
         _, _, _, done, info = env.step({})
         node_list.append(info["nb_nodes"])
