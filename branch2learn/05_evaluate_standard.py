@@ -93,8 +93,8 @@ def main():
             completed += done
 
     log(
-        f"  time {np.mean(time_list): >6.2f} \pm {np.std(time_list): >6.2f}  "
-        f"| nb nodes    {int(np.mean(node_list)): >4d} \pm {int(np.std(node_list)): >4d} "
+        f"  time {np.mean(time_list): >6.2f} \\pm {np.std(time_list): >6.2f}  "
+        f"| nb nodes    {int(np.mean(node_list)): >4d} \\pm {int(np.std(node_list)): >4d} "
         f"| time/node  {1000*np.mean(time_list)/np.mean(node_list): >6.1f} ms "
         f"| completed   {completed : >2d}"
     )

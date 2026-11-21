@@ -162,8 +162,8 @@ def main():
     mean_time = np.mean(time_list)
     mean_node = np.mean(node_list)
     log(
-        f"  time {mean_time: >6.2f} \pm {np.std(time_list): >6.2f}  "
-        f"| nb nodes    {int(mean_node): >4d} \pm {int(np.std(node_list)): >4d} "
+        f"  time {mean_time: >6.2f} \\pm {np.std(time_list): >6.2f}  "
+        f"| nb nodes    {int(mean_node): >4d} \\pm {int(np.std(node_list)): >4d} "
         f"| time/node  {1000*mean_time/mean_node: >6.1f} ms"
         f"| completed   {completed : >2d}"
     )
