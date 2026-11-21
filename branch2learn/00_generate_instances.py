@@ -686,6 +686,16 @@ def main():
         ncolss.extend([ncols] * n)
         denss.extend([dens] * n)
 
+        # eval instances (appended last so earlier splits keep the same RNG stream)
+        n = 500
+        lp_dir = f"{BASEDIR}/setcover/eval"
+        print(f"{n} instances in {lp_dir}")
+        os.makedirs(lp_dir, exist_ok=True)
+        filenames.extend([os.path.join(lp_dir, f"instance_{i+1}.lp") for i in range(n)])
+        nrowss.extend([nrows] * n)
+        ncolss.extend([ncols] * n)
+        denss.extend([dens] * n)
+
         # actually generate the instances
         for filename, nrows, ncols, dens in zip(filenames, nrowss, ncolss, denss):
             print(f"  generating file {filename} ...")
